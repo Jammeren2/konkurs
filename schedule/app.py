@@ -5,7 +5,8 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime, timedelta
 import requests
-
+from urllib.parse import urlparse
+import os
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 jwt = JWTManager(app)
@@ -26,15 +27,23 @@ appointment_model = api.model('Appointment', {
 
 # DB connection helper
 def get_db_connection():
-    conn = psycopg2.connect(
-        host='localhost',
-        database='SCHEDULE',
-        user='postgres',
-        password='123',
-        port=5433,
-        cursor_factory=RealDictCursor
-    )
-    return conn
+    # Получаем URL базы данных из переменной окружения
+    db_url = os.getenv('DATABASE_URL')
+    
+    if db_url:
+        result = urlparse(db_url)
+
+        conn = psycopg2.connect(
+            host=result.hostname,
+            database=result.path[1:],  # Убираем начальный символ "/"
+            user=result.username,
+            password=result.password,
+            port=result.port,
+            cursor_factory=RealDictCursor
+        )
+        return conn
+    else:
+        raise ValueError("DATABASE_URL не установлена в переменных окружения")
 
 def validate_roles(token, required_roles):
     try:

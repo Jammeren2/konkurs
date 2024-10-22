@@ -4,7 +4,8 @@ from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import requests
-
+from urllib.parse import urlparse
+import os
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 jwt = JWTManager(app)
@@ -12,15 +13,23 @@ api = Api(app, version='1.0', title='Hospital API', description='API для уп
 
 # DB connection helper
 def get_db_connection():
-    conn = psycopg2.connect(
-        host='localhost',
-        database='HOSPITALS',
-        user='postgres',
-        password='123',
-        port=5432,
-        cursor_factory=RealDictCursor
-    )
-    return conn
+    # Получаем URL базы данных из переменной окружения
+    db_url = os.getenv('DATABASE_URL')
+    
+    if db_url:
+        result = urlparse(db_url)
+
+        conn = psycopg2.connect(
+            host=result.hostname,
+            database=result.path[1:],  # Убираем начальный символ "/"
+            user=result.username,
+            password=result.password,
+            port=result.port,
+            cursor_factory=RealDictCursor
+        )
+        return conn
+    else:
+        raise ValueError("DATABASE_URL не установлена в переменных окружения")
 
 # Helper function to validate roles
 def validate_roles(token, required_role):

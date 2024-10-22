@@ -5,7 +5,8 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
 import requests
-
+from urllib.parse import urlparse
+import os
 BASE_URL_HOSPITALS = "http://127.0.0.1:8082"
 
 app = Flask(__name__)
@@ -14,16 +15,23 @@ jwt = JWTManager(app)
 api = Api(app)
 
 def get_db_connection():
-    conn = psycopg2.connect(
-        host='localhost',
-        database='DOCUMENTS',
-        user='postgres',
-        password='123',
-        port=5434,
-        cursor_factory=RealDictCursor
-    )
-    return conn
+    # Получаем URL базы данных из переменной окружения
+    db_url = os.getenv('DATABASE_URL')
+    
+    if db_url:
+        result = urlparse(db_url)
 
+        conn = psycopg2.connect(
+            host=result.hostname,
+            database=result.path[1:],  # Убираем начальный символ "/"
+            user=result.username,
+            password=result.password,
+            port=result.port,
+            cursor_factory=RealDictCursor
+        )
+        return conn
+    else:
+        raise ValueError("DATABASE_URL не установлена в переменных окружения")
 def get_hospitals_by_id(access_token, hospital_id):
     url = f"{BASE_URL_HOSPITALS}/api/Hospitals/{hospital_id}"
     headers = {
