@@ -1,0 +1,143 @@
+version: '3.9'
+services:
+  users-db:
+    image: postgres
+    container_name: users-db
+    environment:
+      POSTGRES_DB: USERS
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - users_db_data:/var/lib/postgresql/data
+      - ./dumps/accounts_db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  users-adminer:
+    image: adminer
+    container_name: users-adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: users-db
+    ports:
+      - "8080:8080"
+    depends_on:
+      - users-db
+
+  hospitals-db:
+    image: postgres
+    container_name: hospitals-db
+    environment:
+      POSTGRES_DB: HOSPITALS
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - hospitals_db_data:/var/lib/postgresql/data
+      - ./dumps/hospitals_db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432"
+
+  hospitals-adminer:
+    image: adminer
+    container_name: hospitals-adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: hospitals-db
+    ports:
+      - "8081:8080"
+    depends_on:
+      - hospitals-db
+
+  schedules-db:
+    image: postgres
+    container_name: schedules-db
+    environment:
+      POSTGRES_DB: SCHEDULE
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - schedules_db_data:/var/lib/postgresql/data
+      - ./dumps/schedules_db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5434:5432"
+
+  schedules-adminer:
+    image: adminer
+    container_name: schedules-adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: schedules-db
+    ports:
+      - "8082:8080"
+    depends_on:
+      - schedules-db
+
+  documents-db:
+    image: postgres
+    container_name: documents-db
+    environment:
+      POSTGRES_DB: DOCUMENTS
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - documents_db_data:/var/lib/postgresql/data
+      - ./dumps/documents_db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5435:5432"
+
+  documents-adminer:
+    image: adminer
+    container_name: documents-adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: documents-db
+    ports:
+      - "8083:8080"
+    depends_on:
+      - documents-db
+
+  users-service:
+    build:
+      context: ./microservice-accounts
+    container_name: users-service
+    environment:
+      DATABASE_URL: postgres://postgres:123@users-db:5432/USERS
+    ports:
+      - "8000:8000"
+    depends_on:
+      - users-db
+
+  hospitals-service:
+    build:
+      context: ./microservice-hospitals
+    container_name: hospitals-service
+    environment:
+      DATABASE_URL: postgres://postgres:123@hospitals-db:5432/HOSPITALS
+    ports:
+      - "8001:8000"
+    depends_on:
+      - hospitals-db
+
+  schedules-service:
+    build:
+      context: ./microservice-schedules
+    container_name: schedules-service
+    environment:
+      DATABASE_URL: postgres://postgres:123@schedules-db:5432/SCHEDULE
+    ports:
+      - "8002:8000"
+    depends_on:
+      - schedules-db
+
+  documents-service:
+    build:
+      context: ./microservice-documents
+    container_name: documents-service
+    environment:
+      DATABASE_URL: postgres://postgres:123@documents-db:5432/DOCUMENTS
+    ports:
+      - "8003:8000"
+    depends_on:
+      - documents-db
+
+volumes:
+  users_db_data:
+  hospitals_db_data:
+  schedules_db_data:
+  documents_db_data:
