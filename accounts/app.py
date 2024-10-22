@@ -6,6 +6,8 @@ from flask_cors import CORS
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import json
+from urllib.parse import urlparse
+import os
 
 # Инициализация приложения Flask
 app = Flask(__name__)
@@ -29,16 +31,36 @@ api = Api(app,
 
 
 # Подключение к базе данных PostgreSQL
+# def get_db_connection():
+#     conn = psycopg2.connect(
+#         host='localhost',
+#         database='USERS',  # Укажите вашу базу данных
+#         user='postgres',   # Укажите вашего пользователя
+#         password='123',  # Замените на ваш пароль
+#         port=5431,
+#         cursor_factory=RealDictCursor
+#     )
+#     return conn
+
 def get_db_connection():
-    conn = psycopg2.connect(
-        host='localhost',
-        database='USERS',  # Укажите вашу базу данных
-        user='postgres',   # Укажите вашего пользователя
-        password='123',  # Замените на ваш пароль
-        port=5431,
-        cursor_factory=RealDictCursor
-    )
-    return conn
+    # Получаем URL базы данных из переменной окружения
+    db_url = os.getenv('DATABASE_URL')
+    
+    if db_url:
+        result = urlparse(db_url)
+
+        conn = psycopg2.connect(
+            host=result.hostname,
+            database=result.path[1:],  # Убираем начальный символ "/"
+            user=result.username,
+            password=result.password,
+            port=result.port,
+            cursor_factory=RealDictCursor
+        )
+        return conn
+    else:
+        raise ValueError("DATABASE_URL не установлена в переменных окружения")
+
 
 # Swagger модели
 signup_model = api.model('SignUp', {
