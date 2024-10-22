@@ -1,0 +1,41 @@
+{
+    "Servers": {
+      "1": {
+        "Name": "Users DB",
+        "Group": "Databases",
+        "Host": "users-db",
+        "Port": 5432,
+        "Username": "postgres",
+        "Password": "123",
+        "SSLMode": "prefer"
+      },
+      "2": {
+        "Name": "Hospitals DB",
+        "Group": "Databases",
+        "Host": "hospitals-db",
+        "Port": 5432,
+        "Username": "postgres",
+        "Password": "123",
+        "SSLMode": "prefer"
+      },
+      "3": {
+        "Name": "Schedules DB",
+        "Group": "Databases",
+        "Host": "schedules-db",
+        "Port": 5432,
+        "Username": "postgres",
+        "Password": "123",
+        "SSLMode": "prefer"
+      },
+      "4": {
+        "Name": "Documents DB",
+        "Group": "Databases",
+        "Host": "documents-db",
+        "Port": 5432,
+        "Username": "postgres",
+        "Password": "123",
+        "SSLMode": "prefer"
+      }
+    }
+  }
+  
