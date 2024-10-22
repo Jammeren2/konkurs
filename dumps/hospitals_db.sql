@@ -31,9 +31,9 @@ CREATE TABLE "public"."rooms" (
 ) WITH (oids = false);
 
 INSERT INTO "rooms" ("id", "hospital_id", "room_name") VALUES
-(1,	1,	'1'),
-(2,	1,	'2'),
-(3,	1,	'3'),
+-- (1,	1,	'1'),
+-- (2,	1,	'2'),
+-- (3,	1,	'3'),
 (355,	2,	'1'),
 (356,	2,	'2'),
 (357,	2,	'3'),
