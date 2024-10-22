@@ -62,6 +62,17 @@ update_model = api.model('UpdateAccount', {
     'password': fields.String(description='Новый пароль')
 })
 
+
+def find_user_by_id(user_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+    user = cur.fetchone()
+    cur.close()
+    conn.close()
+    return user
+
+
 # Функция для добавления ролей пользователю
 def add_roles_to_user(user_id, roles):
     conn = get_db_connection()
@@ -443,4 +454,4 @@ class GetDoctorById(Resource):
 
 
 if __name__ == "__main__":
-    app.run(port=8081, host='0.0.0.0', debug=True)
+    app.run(port=8081, host='0.0.0.0', debug=False)

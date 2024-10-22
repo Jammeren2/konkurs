@@ -162,4 +162,4 @@ class HospitalRooms(Resource):
         return jsonify(rooms)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8082, host='0.0.0.0')
+    app.run(debug=False, port=8082, host='0.0.0.0')
