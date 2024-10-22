@@ -81,7 +81,7 @@ class TimetableList(Resource):
         # Проверка существования доктора по ID
         doctorId = data['doctorId']
         headers = {"Authorization": f"Bearer {token}"}
-        doctor_response = requests.get(f'http://127.0.0.1:8081/api/Doctors/{doctorId}', headers=headers)
+        doctor_response = requests.get(f'http://users-service:8081/api/Doctors/{doctorId}', headers=headers)
         
         if doctor_response.status_code != 200:
             abort(500, 'Ошибка при проверке доктора')
@@ -92,7 +92,7 @@ class TimetableList(Resource):
 
         # Проверка существования больницы
         hospitalId = data['hospitalId']
-        hospital_response = requests.get(f'http://127.0.0.1:8082/api/Hospitals/{hospitalId}', headers=headers)
+        hospital_response = requests.get(f'http://hospitals-service:8082/api/Hospitals/{hospitalId}', headers=headers)
         if hospital_response.status_code != 200:
             abort(500, 'Ошибка при проверке больницы')
 
@@ -138,7 +138,7 @@ class Timetable(Resource):
         # Проверка существования доктора по ID
         doctorId = data['doctorId']
         headers = {"Authorization": f"Bearer {token}"}
-        doctor_response = requests.get(f'http://127.0.0.1:8081/api/Doctors/{doctorId}', headers=headers)
+        doctor_response = requests.get(f'http://users-service:8081/api/Doctors/{doctorId}', headers=headers)
         
         if doctor_response.status_code != 200:
             abort(500, 'Ошибка при проверке доктора')
@@ -149,7 +149,7 @@ class Timetable(Resource):
 
         # Проверка существования больницы
         hospitalId = data['hospitalId']
-        hospital_response = requests.get(f'http://127.0.0.1:8082/api/Hospitals/{hospitalId}', headers=headers)
+        hospital_response = requests.get(f'http://hospitals-service:8082/api/Hospitals/{hospitalId}', headers=headers)
         if hospital_response.status_code != 200:
             abort(500, 'Ошибка при проверке больницы')
 
