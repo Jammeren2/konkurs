@@ -142,7 +142,7 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:123@documents-db:5432/DOCUMENTS
     ports:
-      - "8084:8000"
+      - "8084:8084"
     depends_on:
       - documents-db
 
