@@ -29,19 +29,6 @@ api = Api(app,
           authorizations=authorizations,
           security='Bearer')
 
-
-# Подключение к базе данных PostgreSQL
-# def get_db_connection():
-#     conn = psycopg2.connect(
-#         host='localhost',
-#         database='USERS',  # Укажите вашу базу данных
-#         user='postgres',   # Укажите вашего пользователя
-#         password='123',  # Замените на ваш пароль
-#         port=5431,
-#         cursor_factory=RealDictCursor
-#     )
-#     return conn
-
 def get_db_connection():
     # Получаем URL базы данных из переменной окружения
     db_url = os.getenv('DATABASE_URL')
@@ -251,7 +238,11 @@ class GetAccount(Resource):
     @jwt_required()
     def get(self):
         current_user = get_jwt_identity()
+        print(current_user)
         user = find_user_by_username(current_user)
+        print(user)
+        token = request.headers.get('Authorization').split()[1]
+        print(token)
         if user:
             return {'id': user['id'], 'firstName': user['first_name'], 'lastName': user['last_name'], 'username': user['username']}, 200
         return {'message': 'User not found'}, 404
