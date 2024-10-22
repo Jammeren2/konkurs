@@ -94,7 +94,7 @@ services:
 
   users-service:
     build:
-      context: ./microservice-accounts
+      context: ./accounts
     container_name: users-service
     environment:
       DATABASE_URL: postgres://postgres:123@users-db:5432/USERS
@@ -105,7 +105,7 @@ services:
 
   hospitals-service:
     build:
-      context: ./microservice-hospitals
+      context: ./hospitals
     container_name: hospitals-service
     environment:
       DATABASE_URL: postgres://postgres:123@hospitals-db:5432/HOSPITALS
@@ -116,7 +116,7 @@ services:
 
   schedules-service:
     build:
-      context: ./microservice-schedules
+      context: ./schedule
     container_name: schedules-service
     environment:
       DATABASE_URL: postgres://postgres:123@schedules-db:5432/SCHEDULE
@@ -127,7 +127,7 @@ services:
 
   documents-service:
     build:
-      context: ./microservice-documents
+      context: ./documents
     container_name: documents-service
     environment:
       DATABASE_URL: postgres://postgres:123@documents-db:5432/DOCUMENTS
