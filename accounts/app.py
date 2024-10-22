@@ -35,6 +35,7 @@ def get_db_connection():
         database='USERS',  # Укажите вашу базу данных
         user='postgres',   # Укажите вашего пользователя
         password='123',  # Замените на ваш пароль
+        port=5431,
         cursor_factory=RealDictCursor
     )
     return conn

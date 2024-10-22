@@ -19,6 +19,7 @@ def get_db_connection():
         database='DOCUMENTS',
         user='postgres',
         password='123',
+        port=5434,
         cursor_factory=RealDictCursor
     )
     return conn

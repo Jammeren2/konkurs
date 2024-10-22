@@ -31,6 +31,7 @@ def get_db_connection():
         database='SCHEDULE',
         user='postgres',
         password='123',
+        port=5433,
         cursor_factory=RealDictCursor
     )
     return conn

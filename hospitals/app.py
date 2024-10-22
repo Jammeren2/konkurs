@@ -17,6 +17,7 @@ def get_db_connection():
         database='HOSPITALS',
         user='postgres',
         password='123',
+        port=5432,
         cursor_factory=RealDictCursor
     )
     return conn
