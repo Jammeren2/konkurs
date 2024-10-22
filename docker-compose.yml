@@ -12,8 +12,30 @@ services:
       - ./dumps/accounts_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5431:5432"
-    networks:
-      - my-network
+
+  users-adminer:
+    image: adminer
+    container_name: users-adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: users-db
+    ports:
+      - "8180:8080"
+    depends_on:
+      - users-db
+
+  users-service:
+    build:
+      context: ./accounts
+    container_name: users-service
+    environment:
+      DATABASE_URL: postgres://postgres:123@users-db:5432/USERS
+    ports:
+      - "8081:8081"
+    depends_on:
+      - users-db
+
+
+
 
   hospitals-db:
     image: postgres
@@ -27,8 +49,30 @@ services:
       - ./dumps/hospitals_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
-    networks:
-      - my-network
+
+  hospitals-adminer:
+    image: adminer
+    container_name: hospitals-adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: hospitals-db
+    ports:
+      - "8182:8080"
+    depends_on:
+      - hospitals-db
+
+  hospitals-service:
+    build:
+      context: ./hospitals
+    container_name: hospitals-service
+    environment:
+      DATABASE_URL: postgres://postgres:123@hospitals-db:5432/HOSPITALS
+    ports:
+      - "8082:8082"
+    depends_on:
+      - hospitals-db
+
+
+
 
   schedules-db:
     image: postgres
@@ -42,8 +86,31 @@ services:
       - ./dumps/schedules_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5433:5432"
-    networks:
-      - my-network
+
+  schedules-adminer:
+    image: adminer
+    container_name: schedules-adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: schedules-db
+    ports:
+      - "8183:8080"
+    depends_on:
+      - schedules-db
+
+  schedules-service:
+    build:
+      context: ./schedule
+    container_name: schedules-service
+    environment:
+      DATABASE_URL: postgres://postgres:123@schedules-db:5432/SCHEDULE
+    ports:
+      - "8083:8083"
+    depends_on:
+      - schedules-db
+
+
+
+
 
   documents-db:
     image: postgres
@@ -57,80 +124,16 @@ services:
       - ./dumps/documents_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5434:5432"
-    networks:
-      - my-network
 
-  adminer:
+  documents-adminer:
     image: adminer
-    container_name: adminer
+    container_name: documents-adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: documents-db
     ports:
-      - "8180:8080"
+      - "8184:8080"
     depends_on:
-      - users-db
-      - hospitals-db
-      - schedules-db
       - documents-db
-    networks:
-      - my-network
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-      - ./pgadmin-data/servers.json:/pgadmin4/servers.json
-    ports:
-      - "8181:80"
-    depends_on:
-      - users-db
-      - hospitals-db
-      - schedules-db
-      - documents-db
-    networks:
-      - my-network
-    restart: always
-
-  users-service:
-    build:
-      context: ./accounts
-    container_name: users-service
-    environment:
-      DATABASE_URL: postgres://postgres:123@users-db:5432/USERS
-    ports:
-      - "8081:8081"
-    depends_on:
-      - users-db
-    networks:
-      - my-network
-
-  hospitals-service:
-    build:
-      context: ./hospitals
-    container_name: hospitals-service
-    environment:
-      DATABASE_URL: postgres://postgres:123@hospitals-db:5432/HOSPITALS
-    ports:
-      - "8082:8082"
-    depends_on:
-      - hospitals-db
-    networks:
-      - my-network
-
-  schedules-service:
-    build:
-      context: ./schedule
-    container_name: schedules-service
-    environment:
-      DATABASE_URL: postgres://postgres:123@schedules-db:5432/SCHEDULE
-    ports:
-      - "8083:8083"
-    depends_on:
-      - schedules-db
-    networks:
-      - my-network
 
   documents-service:
     build:
@@ -142,15 +145,9 @@ services:
       - "8084:8084"
     depends_on:
       - documents-db
-    networks:
-      - my-network
 
 volumes:
   users_db_data:
   hospitals_db_data:
   schedules_db_data:
   documents_db_data:
-  pgadmin_data:
-
-networks:
-  my-network:
