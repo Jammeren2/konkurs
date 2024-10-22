@@ -19,7 +19,7 @@ services:
     environment:
       ADMINER_DEFAULT_SERVER: users-db
     ports:
-      - "8080:8080"
+      - "8180:8080"
     depends_on:
       - users-db
 
@@ -30,7 +30,7 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:123@users-db:5432/USERS
     ports:
-      - "8084:8084"
+      - "8081:8081"
     depends_on:
       - users-db
 
