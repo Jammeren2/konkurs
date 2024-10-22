@@ -7,7 +7,7 @@ from datetime import datetime
 import requests
 from urllib.parse import urlparse
 import os
-BASE_URL_HOSPITALS = "http://127.0.0.1:8082"
+BASE_URL_HOSPITALS = "http://hospitals-service:8082"
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
@@ -61,7 +61,7 @@ def validate_roles(token, required_roles):
         params = {
             "accessToken": token
         }
-        response = requests.get('http://localhost:8081/api/Authentication/Validate', params=params)
+        response = requests.get('http://users-service:8081/api/Authentication/Validate', params=params)
         data = response.json()
 
         # Проверяем наличие хотя бы одной из требуемых ролей

@@ -50,7 +50,7 @@ def validate_roles(token, required_roles):
         params = {
             "accessToken": token
         }
-        response = requests.get('http://localhost:8081/api/Authentication/Validate', params=params)
+        response = requests.get('http://users-service:8081/api/Authentication/Validate', params=params)
         data = response.json()
         
         # Проверяем наличие хотя бы одной из требуемых ролей
@@ -354,7 +354,7 @@ class AppointmentCreate(Resource):
             abort(400, 'Время уже занято')
 
 
-        url = f"http://localhost:8081/api/Accounts/Me"
+        url = f"http://users-service:8081/api/Accounts/Me"
         headers = {
             "Authorization": f"Bearer {token}"
         }
@@ -387,7 +387,7 @@ class AppointmentDelete(Resource):
         cur = conn.cursor()
 
         # Получение информации о пользователе по токену
-        url = "http://localhost:8081/api/Accounts/Me"
+        url = "http://users-service:8081/api/Accounts/Me"
         headers = {"Authorization": f"Bearer {token}"}
         response = requests.get(url, headers=headers)
         user_info = response.json()

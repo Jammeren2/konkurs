@@ -37,7 +37,7 @@ def validate_roles(token, required_role):
         params = {
             "accessToken": token
         }        
-        response = requests.get('http://localhost:8081/api/Authentication/Validate', params=params)
+        response = requests.get('http://users-service:8081/api/Authentication/Validate', params=params)
         data = response.json()
         if required_role not in data.get("roles", []):
             abort(403, 'Недостаточно прав для выполнения этого действия')
