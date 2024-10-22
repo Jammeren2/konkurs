@@ -10,7 +10,16 @@ import os
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 jwt = JWTManager(app)
-api = Api(app, version='1.0', title='Schedule API', description='API для управления расписанием')
+
+authorizations = {
+    'Bearer': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization',
+        'description': 'Вставте токен в формате: Bearer токен'
+    }
+}
+api = Api(app, version='1.0', title='Schedule API', description='API для управления расписанием', authorizations=authorizations, security='Bearer')
 
 # Модели для Swagger
 timetable_model = api.model('Timetable', {

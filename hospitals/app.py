@@ -9,7 +9,16 @@ import os
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 jwt = JWTManager(app)
-api = Api(app, version='1.0', title='Hospital API', description='API для управления больницами')
+
+authorizations = {
+    'Bearer': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization',
+        'description': 'Вставте токен в формате: Bearer токен'
+    }
+}
+api = Api(app, version='1.0', title='Hospital API', description='API для управления больницами', authorizations=authorizations, security='Bearer')
 
 # DB connection helper
 def get_db_connection():

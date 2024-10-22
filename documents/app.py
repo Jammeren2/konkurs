@@ -12,7 +12,16 @@ BASE_URL_HOSPITALS = "http://hospitals-service:8082"
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 jwt = JWTManager(app)
-api = Api(app)
+authorizations = {
+    'Bearer': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization',
+        'description': 'Вставте токен в формате: Bearer токен'
+    }
+}
+api = Api(app, version='1.0', title='Documents API', description='API для управления документами', authorizations=authorizations, security='Bearer')
+
 
 def get_db_connection():
     # Получаем URL базы данных из переменной окружения
