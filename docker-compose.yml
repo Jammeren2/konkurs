@@ -12,6 +12,8 @@ services:
       - ./dumps/accounts_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5431:5432"
+    networks:
+      - my-network
 
   hospitals-db:
     image: postgres
@@ -25,6 +27,8 @@ services:
       - ./dumps/hospitals_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
+    networks:
+      - my-network
 
   schedules-db:
     image: postgres
@@ -38,6 +42,8 @@ services:
       - ./dumps/schedules_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5433:5432"
+    networks:
+      - my-network
 
   documents-db:
     image: postgres
@@ -51,6 +57,8 @@ services:
       - ./dumps/documents_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5434:5432"
+    networks:
+      - my-network
 
   adminer:
     image: adminer
@@ -62,6 +70,8 @@ services:
       - hospitals-db
       - schedules-db
       - documents-db
+    networks:
+      - my-network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -79,6 +89,8 @@ services:
       - hospitals-db
       - schedules-db
       - documents-db
+    networks:
+      - my-network
     restart: always
 
   users-service:
@@ -91,6 +103,8 @@ services:
       - "8081:8081"
     depends_on:
       - users-db
+    networks:
+      - my-network
 
   hospitals-service:
     build:
@@ -102,6 +116,8 @@ services:
       - "8082:8082"
     depends_on:
       - hospitals-db
+    networks:
+      - my-network
 
   schedules-service:
     build:
@@ -113,6 +129,8 @@ services:
       - "8083:8083"
     depends_on:
       - schedules-db
+    networks:
+      - my-network
 
   documents-service:
     build:
@@ -124,6 +142,8 @@ services:
       - "8084:8084"
     depends_on:
       - documents-db
+    networks:
+      - my-network
 
 volumes:
   users_db_data:
@@ -131,3 +151,6 @@ volumes:
   schedules_db_data:
   documents_db_data:
   pgadmin_data:
+
+networks:
+  my-network:
