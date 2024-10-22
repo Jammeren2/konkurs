@@ -131,9 +131,10 @@ class Hospital(Resource):
             "UPDATE hospitals SET name = %s, address = %s, contact_phone = %s WHERE id = %s AND is_deleted = FALSE",
             (data['name'], data['address'], data['contactPhone'], id)
         )
-
+        
         # Удаление старых кабинетов и добавление новых
         cur.execute("DELETE FROM rooms WHERE hospital_id = %s", (id,))
+        conn.commit()
         for room_name in data['rooms']:
             cur.execute("INSERT INTO rooms (hospital_id, room_name) VALUES (%s, %s)", (id, room_name))
         
