@@ -13,30 +13,6 @@ services:
     ports:
       - "5431:5432"
 
-  users-adminer:
-    image: adminer
-    container_name: users-adminer
-    environment:
-      ADMINER_DEFAULT_SERVER: users-db
-    ports:
-      - "8180:8080"
-    depends_on:
-      - users-db
-
-  users-service:
-    build:
-      context: ./accounts
-    container_name: users-service
-    environment:
-      DATABASE_URL: postgres://postgres:123@users-db:5432/USERS
-    ports:
-      - "8081:8081"
-    depends_on:
-      - users-db
-
-
-
-
   hospitals-db:
     image: postgres
     container_name: hospitals-db
@@ -49,30 +25,6 @@ services:
       - ./dumps/hospitals_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
-
-  hospitals-adminer:
-    image: adminer
-    container_name: hospitals-adminer
-    environment:
-      ADMINER_DEFAULT_SERVER: hospitals-db
-    ports:
-      - "8182:8080"
-    depends_on:
-      - hospitals-db
-
-  hospitals-service:
-    build:
-      context: ./hospitals
-    container_name: hospitals-service
-    environment:
-      DATABASE_URL: postgres://postgres:123@hospitals-db:5432/HOSPITALS
-    ports:
-      - "8082:8082"
-    depends_on:
-      - hospitals-db
-
-
-
 
   schedules-db:
     image: postgres
@@ -87,31 +39,6 @@ services:
     ports:
       - "5433:5432"
 
-  schedules-adminer:
-    image: adminer
-    container_name: schedules-adminer
-    environment:
-      ADMINER_DEFAULT_SERVER: schedules-db
-    ports:
-      - "8183:8080"
-    depends_on:
-      - schedules-db
-
-  schedules-service:
-    build:
-      context: ./schedule
-    container_name: schedules-service
-    environment:
-      DATABASE_URL: postgres://postgres:123@schedules-db:5432/SCHEDULE
-    ports:
-      - "8083:8083"
-    depends_on:
-      - schedules-db
-
-
-
-
-
   documents-db:
     image: postgres
     container_name: documents-db
@@ -125,15 +52,67 @@ services:
     ports:
       - "5434:5432"
 
-  documents-adminer:
+  adminer:
     image: adminer
-    container_name: documents-adminer
-    environment:
-      ADMINER_DEFAULT_SERVER: documents-db
+    container_name: adminer
     ports:
-      - "8184:8080"
+      - "8180:8080"
     depends_on:
+      - users-db
+      - hospitals-db
+      - schedules-db
       - documents-db
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./pgadmin-data/servers.json:/pgadmin4/servers.json
+    ports:
+      - "8181:80"
+    depends_on:
+      - users-db
+      - hospitals-db
+      - schedules-db
+      - documents-db
+    restart: always
+
+  users-service:
+    build:
+      context: ./accounts
+    container_name: users-service
+    environment:
+      DATABASE_URL: postgres://postgres:123@users-db:5432/USERS
+    ports:
+      - "8081:8081"
+    depends_on:
+      - users-db
+
+  hospitals-service:
+    build:
+      context: ./hospitals
+    container_name: hospitals-service
+    environment:
+      DATABASE_URL: postgres://postgres:123@hospitals-db:5432/HOSPITALS
+    ports:
+      - "8082:8082"
+    depends_on:
+      - hospitals-db
+
+  schedules-service:
+    build:
+      context: ./schedule
+    container_name: schedules-service
+    environment:
+      DATABASE_URL: postgres://postgres:123@schedules-db:5432/SCHEDULE
+    ports:
+      - "8083:8083"
+    depends_on:
+      - schedules-db
 
   documents-service:
     build:
@@ -151,3 +130,4 @@ volumes:
   hospitals_db_data:
   schedules_db_data:
   documents_db_data:
+  pgadmin_data:
