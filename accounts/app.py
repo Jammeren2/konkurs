@@ -244,7 +244,7 @@ class GetAccount(Resource):
         token = request.headers.get('Authorization').split()[1]
         print(token)
         if user:
-            return {'id': user['id'], 'firstName': user['first_name'], 'lastName': user['last_name'], 'username': user['username']}, 200
+            return {'id': user['id'], 'firstName': user['first_name'], 'lastName': user['last_name'], 'username': user['username'], '11': current_user}, 200
         return {'message': 'User not found'}, 404
 
 
