@@ -11,7 +11,7 @@ services:
       - users_db_data:/var/lib/postgresql/data
       - ./dumps/accounts_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5432:5432"
+      - "5431:5432"
 
   users-adminer:
     image: adminer
@@ -85,7 +85,7 @@ services:
       - schedules_db_data:/var/lib/postgresql/data
       - ./dumps/schedules_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5432:5432"
+      - "5433:5432"
 
   schedules-adminer:
     image: adminer
@@ -123,7 +123,7 @@ services:
       - documents_db_data:/var/lib/postgresql/data
       - ./dumps/documents_db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5432:5432"
+      - "5434:5432"
 
   documents-adminer:
     image: adminer
