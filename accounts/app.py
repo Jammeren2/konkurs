@@ -18,7 +18,7 @@ authorizations = {
         'type': 'apiKey',
         'in': 'header',
         'name': 'Authorization',
-        'description': 'Enter JWT token as: Bearer <JWT>'
+        'description': 'Вставте токен в формате: Bearer токен'
     }
 }
 
@@ -468,4 +468,4 @@ class GetDoctorById(Resource):
 
 
 if __name__ == "__main__":
-    app.run(port=8081, host='0.0.0.0', debug=False)
+    app.run(port=8081, host='0.0.0.0', debug=True)
