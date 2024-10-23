@@ -1,0 +1,9 @@
+Flask
+flask-restx
+flask-jwt-extended
+werkzeug
+flask-cors
+psycopg2-binary
+requests
+termcolor
+urllib3
