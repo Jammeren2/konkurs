@@ -126,13 +126,16 @@ services:
       - documents-db
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
+    image: bitnami/elasticsearch:7.17.10
     container_name: elasticsearch
     environment:
-      - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ELASTICSEARCH_NODE_NAME=elasticsearch
+      - ELASTICSEARCH_CLUSTER_NAME=elasticsearch-cluster
+      - ELASTICSEARCH_HEAP_SIZE=512m
+      - ELASTICSEARCH_NETWORK_HOST=0.0.0.0
+      - ELASTICSEARCH_SINGLE_NODE=true
     volumes:
-      - es_data:/usr/share/elasticsearch/data
+      - es_data:/bitnami/elasticsearch
     ports:
       - "9200:9200"
       - "9300:9300"
