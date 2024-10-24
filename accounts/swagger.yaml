@@ -55,6 +55,9 @@ paths:
 
   /api/Authentication/SignIn:
     post:
+      tags: [
+        "Authentication"
+      ]
       summary: Вход пользователя
       parameters:
         - in: body
@@ -62,11 +65,13 @@ paths:
           schema:
             type: string
             properties:
-                - name: 'username'
+                - name: username
+                  in: "query"
                   required: true
                   type: string
                   description: Имя для входа
-                - name: 'password'
+                - name: password
+                  in: "query"
                   required: true
                   type: string
                   description: Пароль пользователя
