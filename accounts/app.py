@@ -25,6 +25,8 @@ authorizations = {
 
 
 api = Api(app, 
+          default = None,
+          default_label=None,
           version='1.0', 
           title='Account Management API', 
           description='API для управления аккаунтами и аутентификацией пользователей',
@@ -168,7 +170,7 @@ class SignUp(Resource):
         return {'message': 'Account created', 'user_id': user_id}, 201
 
 
-@authorizations.route('/api/Authentication/SignUp')
+@api.route('/api/Authentication/SignUp')
 @api.doc(tags=['Authentication'])
 class SignUp(Resource):
     @api.expect(signup_model)
@@ -181,7 +183,7 @@ class SignUp(Resource):
         user_id = create_user(data)
         return {'message': 'Аккаунт создан', 'user_id': user_id}, 201
 
-@authorizations.route('/api/Authentication/SignIn')
+@api.route('/api/Authentication/SignIn')
 @api.doc(tags=['Authentication'])
 class SignIn(Resource):
     @api.expect(signin_model)
@@ -197,7 +199,7 @@ class SignIn(Resource):
         refresh_token = create_refresh_token(identity=username)
         return {'accessToken': access_token, 'refreshToken': refresh_token}, 200
 
-@authorizations.route('/api/Authentication/SignOut')
+@api.route('/api/Authentication/SignOut')
 @api.doc(tags=['Authentication'])
 class SignOut(Resource):
     @jwt_required()
@@ -206,7 +208,7 @@ class SignOut(Resource):
         current_user = get_jwt_identity()
         return {'message': f'{current_user} вышел из системы'}, 200
 
-@authorizations.route('/api/Authentication/Validate')
+@api.route('/api/Authentication/Validate')
 @api.doc(tags=['Authentication'])
 class ValidateToken(Resource):
     @api.param('accessToken', 'JWT токен для проверки')
@@ -224,7 +226,7 @@ class ValidateToken(Resource):
         except Exception as e:
             return {"message": "Невалидный токен", "error": str(e)}, 401
 
-@authorizations.route('/api/Authentication/Refresh')
+@api.route('/api/Authentication/Refresh')
 @api.doc(tags=['Authentication'])
 class RefreshToken(Resource):
     @api.expect(refresh_model)
