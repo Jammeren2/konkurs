@@ -34,8 +34,9 @@ appointment_model = api.model('Appointment', {
     'time': fields.DateTime(required=True, description='Время записи на приём')
 })
 
-timetables = Namespace('Расписание', description='CreateTimetable, Update, DeteteTimetable, DeleteDoctor, DeleteHospital, GetByDoctor, GetByRoom')
+
 appointment1 = Namespace('Талоны', description='GetAppointments, CreateAppointments, DeleteAppointments')
+timetables = Namespace('Расписание', description='CreateTimetable, Update, DeteteTimetable, DeleteDoctor, DeleteHospital, GetByDoctor, GetByRoom')
 
 
 # DB connection helper
@@ -313,7 +314,7 @@ class DoctorSchedule(Resource):
 
 
 # GET /api/Timetable/{id}/Appointments - получение свободных талонов
-@api.route('/Timetable/<int:id>/Appointments')
+@appointment1.route('/Timetable/<int:id>/Appointments')
 class TimetableAppointments(Resource):
     @jwt_required()
     def get(self, id):
@@ -346,7 +347,7 @@ class TimetableAppointments(Resource):
         return jsonify(appointments)
 
 
-@api.route('/Timetable/<int:id>/Appointments')
+@appointment1.route('/Timetable/<int:id>/Appointments')
 class AppointmentCreate(Resource):
     @jwt_required()
     @api.expect(appointment_model)
@@ -398,7 +399,7 @@ class AppointmentCreate(Resource):
 
 
 # DELETE /api/Appointment/{id} - отмена записи
-@api.route('/Appointment/<int:id>')
+@appointment1.route('/Appointment/<int:id>')
 class AppointmentDelete(Resource):
     @jwt_required()
     def delete(self, id):
