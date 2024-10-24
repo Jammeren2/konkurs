@@ -220,8 +220,11 @@ class RefreshToken(Resource):
         refresh_token = data['refreshToken']
         try:
             decoded_token = decode_token(refresh_token)
-            new_access_token = create_access_token(identity=decoded_token['sub'])
-            return {'accessToken': new_access_token}, 200
+            if decoded_token['fresh']:
+                new_access_token = create_access_token(identity=decoded_token['sub'])
+                return {'accessToken': new_access_token}, 200
+            else:
+                return {"message": "Это не refresh токен", "error": str(e)}, 402
         except Exception as e:
             return {"message": "Невалидный refresh токен", "error": str(e)}, 401
 
