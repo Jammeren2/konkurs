@@ -258,11 +258,6 @@ class UpdateAccount(Resource):
         conn.close()
         return {'message': 'Аккаунт успешно обновлен'}, 200
 
-from flask import request, jsonify
-from flask_restx import Namespace, Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity
-
-accounts = Namespace('accounts', description='Accounts related operations')
 
 @accounts.route('/')
 class AccountList(Resource):
@@ -304,7 +299,7 @@ class AccountList(Resource):
 
 
 @accounts.route('/<int:id>')
-class UpdateAccount(Resource):
+class UpdateDeleteAccount(Resource):
     @jwt_required()
     @accounts.doc(description="Обновление информации о пользователе по ID (только для админов)")
     @accounts.expect(signup_model)
@@ -347,12 +342,9 @@ class UpdateAccount(Resource):
 
         return {'message': 'Account updated successfully'}, 200
 
-
-
-@accounts.route('/<int:id>')
-class DeleteAccount(Resource):
     @jwt_required()
     def delete(self, id):
+        """Мягкое удаление аккаунта по id"""
         current_user = get_jwt_identity()
         user = find_user_by_username(current_user)
 
@@ -367,6 +359,9 @@ class DeleteAccount(Resource):
         conn.close()
         
         return {'message': 'Account soft deleted'}, 200
+
+
+
 
 @doctors.route('/')
 class GetDoctors(Resource):
