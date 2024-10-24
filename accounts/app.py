@@ -29,6 +29,7 @@ api = Api(app,
           title='Account Management API', 
           description='API для управления аккаунтами и аутентификацией пользователей',
           authorizations=authorizations,
+          contact = 'https://github.com/Jammeren2/konkurs',
           security='Bearer')
 
 def get_db_connection():
@@ -439,4 +440,7 @@ api.add_namespace(authorization, path='/api/Authentication')
 api.add_namespace(accounts, path='/api/Accounts')
 api.add_namespace(doctors, path='/api/Doctors')
 if __name__ == "__main__":
-    app.run(port=8081, host='0.0.0.0', debug=True)
+    app.run(
+        # port=8081, 
+        port=25565, 
+            host='0.0.0.0', debug=True)
