@@ -48,9 +48,9 @@ def get_db_connection():
         raise ValueError("DATABASE_URL не установлена в переменных окружения")
     
 
-authorization = Namespace('authorization', description='TODO operations')
-accounts = Namespace('authorization', description='TODO operations')
-doctors = Namespace('authorization', description='TODO operations')
+authorization = Namespace('Авторизация', description='SignIn, SignUp, SignOut, Validate, Refresh')
+accounts = Namespace('Аккаунты', description='TODO operations')
+doctors = Namespace('Доктора', description='TODO operations')
 
 
 
