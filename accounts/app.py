@@ -50,7 +50,7 @@ def get_db_connection():
 
 
 auth_ns = Namespace('Authorization', description='SignIn, SignUp, SignOut, Validate, Refresh')
-
+api.add_namespace(auth_ns)
 
 # Swagger модели
 signup_model = api.auth_ns('SignUp', {
