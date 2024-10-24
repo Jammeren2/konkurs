@@ -6,7 +6,6 @@ info:
   contact:
     name: API Support
     url: https://github.com/Jammeren2/konkurs
-host: localhost:8081
 schemes:
   - http
 basePath: /
