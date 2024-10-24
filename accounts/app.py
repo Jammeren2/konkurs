@@ -154,7 +154,7 @@ def find_user_by_username(username):
     conn.close()
     return user
 
-@authorization.route('/api/Authentication/SignUp')
+@authorization.route('/SignUp')
 class SignUp(Resource):
     @api.expect(signup_model)
     def post(self):
@@ -166,7 +166,7 @@ class SignUp(Resource):
         user_id = create_user(data)
         return {'message': 'Аккаунт создан', 'user_id': user_id}, 201
 
-@authorization.route('/api/Authentication/SignIn')
+@authorization.route('/SignIn')
 class SignIn(Resource):
     @api.expect(signin_model)
     def post(self):
@@ -181,7 +181,7 @@ class SignIn(Resource):
         refresh_token = create_refresh_token(identity=username)
         return {'accessToken': access_token, 'refreshToken': refresh_token}, 200
 
-@authorization.route('/api/Authentication/SignOut')
+@authorization.route('/SignOut')
 class SignOut(Resource):
     @jwt_required()
     def put(self):
@@ -189,7 +189,7 @@ class SignOut(Resource):
         current_user = get_jwt_identity()
         return {'message': f'{current_user} вышел из системы'}, 200
 
-@authorization.route('/api/Authentication/Validate')
+@authorization.route('/Validate')
 class ValidateToken(Resource):
     @api.param('accessToken', 'JWT токен для проверки')
     def get(self):
@@ -206,7 +206,7 @@ class ValidateToken(Resource):
         except Exception as e:
             return {"message": "Невалидный токен", "error": str(e)}, 401
 
-@authorization.route('/api/Authentication/Refresh')
+@authorization.route('/Refresh')
 class RefreshToken(Resource):
     @api.expect(refresh_model)
     def post(self):
@@ -222,7 +222,7 @@ class RefreshToken(Resource):
 
 
 # Аккаунты
-@accounts.route('/api/Accounts/Me')
+@accounts.route('/Me')
 class GetAccount(Resource):
     @jwt_required()
     def get(self):
@@ -233,7 +233,7 @@ class GetAccount(Resource):
             return {'id': user['id'], 'firstName': user['first_name'], 'lastName': user['last_name'], 'username': user['username']}, 200
         return {'message': 'Пользователь не найден'}, 404
 
-@accounts.route('/api/Accounts/Update')
+@accounts.route('/Update')
 class UpdateAccount(Resource):
     @jwt_required()
     @api.expect(update_model)
@@ -258,7 +258,7 @@ class UpdateAccount(Resource):
         conn.close()
         return {'message': 'Аккаунт успешно обновлен'}, 200
 
-@accounts.route('/api/Accounts')
+@accounts.route('/')
 class GetAllAccounts(Resource):
     @jwt_required()
     def get(self):
@@ -280,7 +280,7 @@ class GetAllAccounts(Resource):
             row['created_at'] = row['created_at'].isoformat()
         return jsonify(users), 200
 
-@accounts.route('/api/Accounts')
+@accounts.route('/')
 class CreateAccount(Resource):
     @jwt_required()
     @api.expect(signup_model)
@@ -296,7 +296,7 @@ class CreateAccount(Resource):
         return {'message': 'Account created', 'user_id': user_id}, 201
 
 
-@accounts.route('/api/Accounts/<int:id>')
+@accounts.route('/<int:id>')
 class UpdateAccountById(Resource):
     @jwt_required()
     @api.expect(signup_model)
@@ -348,7 +348,7 @@ class UpdateAccountById(Resource):
         return {'message': 'Account updated successfully'}, 200
 
 
-@accounts.route('/api/Accounts/<int:id>')
+@accounts.route('/<int:id>')
 class DeleteAccount(Resource):
     @jwt_required()
     def delete(self, id):
@@ -367,7 +367,7 @@ class DeleteAccount(Resource):
         
         return {'message': 'Account soft deleted'}, 200
 
-@doctors.route('/api/Doctors')
+@doctors.route('/')
 class GetDoctors(Resource):
     @jwt_required()
     def get(self):
@@ -404,7 +404,7 @@ class GetDoctors(Resource):
         return response
 
 
-@doctors.route('/api/Doctors/<int:id>')
+@doctors.route('/<int:id>')
 class GetDoctorById(Resource):
     @jwt_required()
     def get(self, id):
@@ -437,8 +437,8 @@ class GetDoctorById(Resource):
             return response
         return {'message': 'Doctor not found'}, 404
 
-api.add_namespace(authorization)
-api.add_namespace(accounts)
-api.add_namespace(doctors)
+api.add_namespace(authorization, path='/api/Authentication')
+api.add_namespace(accounts, path='/api/Accounts')
+api.add_namespace(doctors, path='/api/Doctors')
 if __name__ == "__main__":
     app.run(port=8081, host='0.0.0.0', debug=True)
