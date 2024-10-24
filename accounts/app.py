@@ -49,6 +49,8 @@ def get_db_connection():
     
 
 authorization = Namespace('authorization', description='TODO operations')
+accounts = Namespace('authorization', description='TODO operations')
+doctors = Namespace('authorization', description='TODO operations')
 
 
 
@@ -142,8 +144,6 @@ def has_role(user_id, required_role):
     roles = get_user_roles(user_id)
     return required_role in roles
 
-
-
 # Функция для поиска пользователя в базе данных по имени
 def find_user_by_username(username):
     conn = get_db_connection()
@@ -153,23 +153,6 @@ def find_user_by_username(username):
     cur.close()
     conn.close()
     return user
-
-@api.route('/api/Authentication/SignUp')
-class SignUp(Resource):
-    @api.expect(signup_model)
-    def post(self):
-        """Регистрация пользователя"""
-        data = request.json
-        username = data['username']
-
-        # Проверяем, существует ли пользователь
-        if find_user_by_username(username):
-            return {'message': 'User already exists'}, 400
-
-        # Создаем пользователя
-        user_id = create_user(data)
-        return {'message': 'Account created', 'user_id': user_id}, 201
-
 
 @authorization.route('/api/Authentication/SignUp')
 class SignUp(Resource):
@@ -239,8 +222,7 @@ class RefreshToken(Resource):
 
 
 # Аккаунты
-@api.route('/api/Accounts/Me')
-@api.doc(tags=['Accounts'])
+@accounts.route('/api/Accounts/Me')
 class GetAccount(Resource):
     @jwt_required()
     def get(self):
@@ -251,8 +233,7 @@ class GetAccount(Resource):
             return {'id': user['id'], 'firstName': user['first_name'], 'lastName': user['last_name'], 'username': user['username']}, 200
         return {'message': 'Пользователь не найден'}, 404
 
-@api.route('/api/Accounts/Update')
-@api.doc(tags=['Accounts'])
+@accounts.route('/api/Accounts/Update')
 class UpdateAccount(Resource):
     @jwt_required()
     @api.expect(update_model)
@@ -277,8 +258,7 @@ class UpdateAccount(Resource):
         conn.close()
         return {'message': 'Аккаунт успешно обновлен'}, 200
 
-@api.route('/api/Accounts')
-@api.doc(tags=['Accounts'])
+@accounts.route('/api/Accounts')
 class GetAllAccounts(Resource):
     @jwt_required()
     def get(self):
@@ -300,7 +280,7 @@ class GetAllAccounts(Resource):
             row['created_at'] = row['created_at'].isoformat()
         return jsonify(users), 200
 
-@api.route('/api/Accounts')
+@accounts.route('/api/Accounts')
 class CreateAccount(Resource):
     @jwt_required()
     @api.expect(signup_model)
@@ -316,7 +296,7 @@ class CreateAccount(Resource):
         return {'message': 'Account created', 'user_id': user_id}, 201
 
 
-@api.route('/api/Accounts/<int:id>')
+@accounts.route('/api/Accounts/<int:id>')
 class UpdateAccountById(Resource):
     @jwt_required()
     @api.expect(signup_model)
@@ -368,7 +348,7 @@ class UpdateAccountById(Resource):
         return {'message': 'Account updated successfully'}, 200
 
 
-@api.route('/api/Accounts/<int:id>')
+@accounts.route('/api/Accounts/<int:id>')
 class DeleteAccount(Resource):
     @jwt_required()
     def delete(self, id):
@@ -387,7 +367,7 @@ class DeleteAccount(Resource):
         
         return {'message': 'Account soft deleted'}, 200
 
-@api.route('/api/Doctors')
+@doctors.route('/api/Doctors')
 class GetDoctors(Resource):
     @jwt_required()
     def get(self):
@@ -424,7 +404,7 @@ class GetDoctors(Resource):
         return response
 
 
-@api.route('/api/Doctors/<int:id>')
+@doctors.route('/api/Doctors/<int:id>')
 class GetDoctorById(Resource):
     @jwt_required()
     def get(self, id):
@@ -457,6 +437,8 @@ class GetDoctorById(Resource):
             return response
         return {'message': 'Doctor not found'}, 404
 
-api.add_namespace(authorization, path='/')
+api.add_namespace(authorization)
+api.add_namespace(accounts)
+api.add_namespace(doctors)
 if __name__ == "__main__":
     app.run(port=8081, host='0.0.0.0', debug=True)
