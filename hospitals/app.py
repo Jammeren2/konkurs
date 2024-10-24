@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, abort
-from flask_restx import Api, Resource, fields
+from flask_restx import Api, Resource, fields, Namespace
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -61,8 +61,12 @@ hospital_model = api.model('Hospital', {
     'rooms': fields.List(fields.String, description='Список кабинетов')
 })
 
+hospital = Namespace('Авторизация', description='SignIn, SignUp, SignOut, Validate, Refresh')
+
+
+
 # Routes
-@api.route('/api/Hospitals')
+@hospital.route('/')
 class HospitalsList(Resource):
     @jwt_required()
 
@@ -105,7 +109,7 @@ class HospitalsList(Resource):
         response.status_code = 200
         return response
 
-@api.route('/api/Hospitals/<int:id>')
+@hospital.route('/<int:id>')
 class Hospital(Resource):
     @jwt_required()
     def get(self, id):
@@ -168,7 +172,7 @@ class Hospital(Resource):
 
         return {'message': 'Hospital deleted'}, 200
 
-@api.route('/api/Hospitals/<int:id>/Rooms')
+@hospital.route('/<int:id>/Rooms')
 class HospitalRooms(Resource):
     @jwt_required()
     def get(self, id):
@@ -180,6 +184,10 @@ class HospitalRooms(Resource):
         cur.close()
         conn.close()
         return jsonify(rooms)
+
+
+api.add_namespace(hospital, path='/api/Hospitals')
+
 
 if __name__ == '__main__':
     app.run(debug=False, port=8082, host='0.0.0.0')
