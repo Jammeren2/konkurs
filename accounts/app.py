@@ -20,24 +20,8 @@ app.config['SWAGGER'] = {
 }
 swagger = Swagger(app, template_file='model.yaml')
 jwt = JWTManager(app)
-# authorizations = {
-#     'Bearer': {
-#         'type': 'apiKey',
-#         'in': 'header',
-#         'name': 'Authorization',
-#         'description': 'Вставьте токен в формате: Bearer токен'
-#     }
-# }
-
-# api = Api(app, 
-#           version='1337.0', 
-#           title='Account API', 
-#           description='API для управления аккаунтами',
-#           authorizations=authorizations,
-#           security='Bearer')
 
 def get_db_connection():
-    # Получаем URL базы данных из переменной окружения
     db_url = os.getenv('DATABASE_URL')
     
     if db_url:
@@ -55,32 +39,6 @@ def get_db_connection():
     else:
         raise ValueError("DATABASE_URL не установлена в переменных окружения")
 
-
-# auth_ns = Namespace('Authorization', description='SignIn, SignUp, SignOut, Validate, Refresh')
-# api.add_namespace(auth_ns, path='/Authentication')
-
-# Swagger модели
-# signup_model = auth_ns.model('SignUp', {
-#     'lastName': fields.String(required=True, description='Фамилия пользователя'),
-#     'firstName': fields.String(required=True, description='Имя пользователя'),
-#     'username': fields.String(required=True, description='Имя для входа'),
-#     'password': fields.String(required=True, description='Пароль пользователя')
-# })
-
-# signin_model = auth_ns.model('SignIn', {
-#     'username': fields.String(required=True, description='Имя для входа'),
-#     'password': fields.String(required=True, description='Пароль пользователя')
-# })
-
-# refresh_model = auth_ns.model('Refresh', {
-#     'refreshToken': fields.String(required=True, description='Токен для обновления')
-# })
-
-# update_model = api.model('UpdateAccount', {
-#     'lastName': fields.String(description='Новая фамилия'),
-#     'firstName': fields.String(description='Новое имя'),
-#     'password': fields.String(description='Новый пароль')
-# })
 
 
 def find_user_by_id(user_id):
