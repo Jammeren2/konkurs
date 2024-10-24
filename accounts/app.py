@@ -258,9 +258,16 @@ class UpdateAccount(Resource):
         conn.close()
         return {'message': 'Аккаунт успешно обновлен'}, 200
 
+from flask import request, jsonify
+from flask_restx import Namespace, Resource
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
+accounts = Namespace('accounts', description='Accounts related operations')
+
 @accounts.route('/')
-class GetAllAccounts(Resource):
+class AccountList(Resource):
     @jwt_required()
+    @accounts.doc(description="Получение списка всех пользователей (только для админов)")
     def get(self):
         """Получение списка всех пользователей (только для админов)"""
         current_user = get_jwt_identity()
@@ -280,11 +287,11 @@ class GetAllAccounts(Resource):
             row['created_at'] = row['created_at'].isoformat()
         return jsonify(users), 200
 
-@accounts.route('/')
-class CreateAccount(Resource):
     @jwt_required()
-    @api.expect(signup_model)
+    @accounts.doc(description="Создание аккаунта (только для админов)")
+    @accounts.expect(signup_model)
     def post(self):
+        """Создание аккаунта (только для админов)"""
         current_user = get_jwt_identity()
         user = find_user_by_username(current_user)
 
@@ -297,21 +304,19 @@ class CreateAccount(Resource):
 
 
 @accounts.route('/<int:id>')
-class UpdateAccountById(Resource):
+class UpdateAccount(Resource):
     @jwt_required()
-    @api.expect(signup_model)
+    @accounts.doc(description="Обновление информации о пользователе по ID (только для админов)")
+    @accounts.expect(signup_model)
     def put(self, id):
+        """Обновление информации о пользователе по ID (только для админов)"""
         current_user = get_jwt_identity()
         admin_user = find_user_by_username(current_user)
 
-        # Проверка, является ли текущий пользователь администратором
         if not has_role(admin_user['id'], 'Admin'):
             return {'message': 'Access denied'}, 403
 
-        # Получаем данные из запроса
         data = request.json
-
-        # Проверка существования пользователя с указанным id
         user_to_update = find_user_by_id(id)
         if not user_to_update:
             return {'message': 'User not found'}, 404
@@ -319,33 +324,29 @@ class UpdateAccountById(Resource):
         conn = get_db_connection()
         cur = conn.cursor()
 
-        # Обновление имени пользователя, если передано
         if 'username' in data:
             cur.execute("UPDATE users SET username = %s WHERE id = %s", (data['username'], id))
 
-        # Обновление имени и фамилии, если переданы
         if 'firstName' in data:
             cur.execute("UPDATE users SET first_name = %s WHERE id = %s", (data['firstName'], id))
         if 'lastName' in data:
             cur.execute("UPDATE users SET last_name = %s WHERE id = %s", (data['lastName'], id))
 
-        # Обновление пароля, если передан
         if 'password' in data:
             hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256')
             cur.execute("UPDATE users SET password = %s WHERE id = %s", (hashed_password, id))
 
-        # Обновление ролей, если переданы
         if 'roles' in data:
             cur.execute("DELETE FROM user_roles WHERE user_id = %s", (id,))
             for role in data['roles']:
                 cur.execute("INSERT INTO user_roles (user_id, role_name) VALUES (%s, %s)", (id, role))
 
-        # Применение изменений
         conn.commit()
         cur.close()
         conn.close()
 
         return {'message': 'Account updated successfully'}, 200
+
 
 
 @accounts.route('/<int:id>')
