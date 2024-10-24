@@ -60,22 +60,14 @@ paths:
       ]
       summary: Вход пользователя
       parameters:
-        - in: body
-          name: body
-          schema:
-            type: string
-            properties:
-              - name: "username"
-                in: "query"
-                required: true
-                type: string
-              - name: "password"
-                in: "query"
-                required: true
-                type: string
-            required:
-              - username
-              - password
+        - name: "username"
+          in: "query"
+          required: true
+          type: string
+        - name: "password"
+          in: "query"
+          required: true
+          type: string
       responses:
         '200':
           description: Успешный вход
