@@ -1,0 +1,290 @@
+openapi: 3.0.0
+info:
+  title: Account API
+  version: '1337.0'
+  description: API для управления аккаунтами
+  contact:
+    name: API Support
+    url: http://www.example.com/support
+servers:
+  - url: http://localhost:8081
+    description: Local server
+
+components:
+  securitySchemes:
+    Bearer:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Вставьте токен в формате: Bearer токен
+  schemas:
+    SignUp:
+      type: object
+      properties:
+        lastName:
+          type: string
+          description: Фамилия пользователя
+        firstName:
+          type: string
+          description: Имя пользователя
+        username:
+          type: string
+          description: Имя для входа
+        password:
+          type: string
+          description: Пароль пользователя
+      required:
+        - lastName
+        - firstName
+        - username
+        - password
+    SignIn:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Имя для входа
+        password:
+          type: string
+          description: Пароль пользователя
+      required:
+        - username
+        - password
+    Refresh:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          description: Токен для обновления
+      required:
+        - refreshToken
+    UpdateAccount:
+      type: object
+      properties:
+        lastName:
+          type: string
+          description: Новая фамилия
+        firstName:
+          type: string
+          description: Новое имя
+        password:
+          type: string
+          description: Новый пароль
+
+security:
+  - Bearer: []
+
+paths:
+  /api/Authentication/SignUp:
+    post:
+      summary: Регистрация пользователя
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUp'
+      responses:
+        '201':
+          description: Account created
+        '400':
+          description: User already exists
+
+  /api/Authentication/SignIn:
+    post:
+      summary: Вход пользователя
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignIn'
+      responses:
+        '200':
+          description: Успешный вход
+
+  /api/Authentication/SignOut:
+    put:
+      summary: Выход
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          description: User signed out
+
+  /api/Authentication/Validate:
+    get:
+      summary: Проверка токена
+      parameters:
+        - in: query
+          name: accessToken
+          schema:
+            type: string
+          required: true
+          description: JWT токен
+      responses:
+        '200':
+          description: Token is valid
+        '401':
+          description: Invalid token
+
+  /api/Authentication/Refresh:
+    post:
+      summary: Обновление токена
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Refresh'
+      responses:
+        '200':
+          description: Новый токен доступа
+
+  /api/Accounts/Me:
+    get:
+      summary: Получить информацию о текущем аккаунте
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          description: Информация о пользователе
+        '404':
+          description: User not found
+
+  /api/Accounts/Update:
+    put:
+      summary: Обновить информацию о текущем аккаунте
+      security:
+        - Bearer: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAccount'
+      responses:
+        '200':
+          description: Account updated successfully
+        '404':
+          description: User not found
+
+  /api/Accounts:
+    get:
+      summary: Получить всех пользователей
+      security:
+        - Bearer: []
+      parameters:
+        - in: query
+          name: from
+          schema:
+            type: integer
+          description: Начало пагинации
+        - in: query
+          name: count
+          schema:
+            type: integer
+          description: Количество записей
+      responses:
+        '200':
+          description: Список пользователей
+        '403':
+          description: Access denied
+    post:
+      summary: Создать нового пользователя
+      security:
+        - Bearer: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUp'
+      responses:
+        '201':
+          description: Account created
+        '403':
+          description: Access denied
+
+  /api/Accounts/{id}:
+    put:
+      summary: Обновить пользователя по ID
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID пользователя
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUp'
+      responses:
+        '200':
+          description: Account updated successfully
+        '403':
+          description: Access denied
+        '404':
+          description: User not found
+    delete:
+      summary: Удалить пользователя по ID
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            required: true
+            description: ID пользователя
+      responses:
+        '200':
+          description: Account soft deleted
+        '403':
+          description: Access denied
+
+  /api/Doctors:
+    get:
+      summary: Получить всех врачей
+      security:
+        - Bearer: []
+      parameters:
+        - in: query
+          name: nameFilter
+          schema:
+            type: string
+          description: Фильтр по имени
+        - in: query
+          name: from
+          schema:
+            type: integer
+          description: Начало пагинации
+        - in: query
+          name: count
+          schema:
+            type: integer
+          description: Количество записей
+      responses:
+        '200':
+          description: Список врачей
+        '403':
+          description: Access denied
+
+  /api/Doctors/{id}:
+    get:
+      summary: Получить информацию о враче по ID
+      security:
+        - Bearer: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            required: true
+            description: ID врача
+      responses:
+        '200':
+          description: Информация о враче
+        '403':
+          description: Access denied
+        '404':
+          description: Doctor not found

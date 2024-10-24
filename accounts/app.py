@@ -8,17 +8,24 @@ from psycopg2.extras import RealDictCursor
 import json
 from urllib.parse import urlparse
 import os
+from flasgger import Swagger
+
 
 # Инициализация приложения Flask
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
+app.config['SWAGGER'] = {
+    'title': 'Account API',
+    'uiversion': 3
+}
+swagger = Swagger(app, template_file='model.yaml')
 jwt = JWTManager(app)
 authorizations = {
     'Bearer': {
         'type': 'apiKey',
         'in': 'header',
         'name': 'Authorization',
-        'description': 'Вставте токен в формате: Bearer токен'
+        'description': 'Вставьте токен в формате: Bearer токен'
     }
 }
 
@@ -49,31 +56,31 @@ def get_db_connection():
         raise ValueError("DATABASE_URL не установлена в переменных окружения")
 
 
-auth_ns = Namespace('Authorization', description='SignIn, SignUp, SignOut, Validate, Refresh')
-api.add_namespace(auth_ns, path='/Authentication')
+# auth_ns = Namespace('Authorization', description='SignIn, SignUp, SignOut, Validate, Refresh')
+# api.add_namespace(auth_ns, path='/Authentication')
 
 # Swagger модели
-signup_model = auth_ns.model('SignUp', {
-    'lastName': fields.String(required=True, description='Фамилия пользователя'),
-    'firstName': fields.String(required=True, description='Имя пользователя'),
-    'username': fields.String(required=True, description='Имя для входа'),
-    'password': fields.String(required=True, description='Пароль пользователя')
-})
+# signup_model = auth_ns.model('SignUp', {
+#     'lastName': fields.String(required=True, description='Фамилия пользователя'),
+#     'firstName': fields.String(required=True, description='Имя пользователя'),
+#     'username': fields.String(required=True, description='Имя для входа'),
+#     'password': fields.String(required=True, description='Пароль пользователя')
+# })
 
-signin_model = auth_ns.model('SignIn', {
-    'username': fields.String(required=True, description='Имя для входа'),
-    'password': fields.String(required=True, description='Пароль пользователя')
-})
+# signin_model = auth_ns.model('SignIn', {
+#     'username': fields.String(required=True, description='Имя для входа'),
+#     'password': fields.String(required=True, description='Пароль пользователя')
+# })
 
-refresh_model = auth_ns.model('Refresh', {
-    'refreshToken': fields.String(required=True, description='Токен для обновления')
-})
+# refresh_model = auth_ns.model('Refresh', {
+#     'refreshToken': fields.String(required=True, description='Токен для обновления')
+# })
 
-update_model = api.model('UpdateAccount', {
-    'lastName': fields.String(description='Новая фамилия'),
-    'firstName': fields.String(description='Новое имя'),
-    'password': fields.String(description='Новый пароль')
-})
+# update_model = api.model('UpdateAccount', {
+#     'lastName': fields.String(description='Новая фамилия'),
+#     'firstName': fields.String(description='Новое имя'),
+#     'password': fields.String(description='Новый пароль')
+# })
 
 
 def find_user_by_id(user_id):
@@ -154,9 +161,9 @@ def find_user_by_username(username):
 
 @api.route('/api/Authentication/SignUp')
 class SignUp(Resource):
-    @auth_ns.expect(signup_model)
+    # @auth_ns.expect(signup_model)
     def post(self):
-        """Регистрация пользователя"""
+        # """Регистрация пользователя"""
         data = request.json
         username = data['username']
 
@@ -171,9 +178,9 @@ class SignUp(Resource):
 
 @api.route('/api/Authentication/SignIn')
 class SignIn(Resource):
-    @auth_ns.expect(signin_model)
+    # @auth_ns.expect(signin_model)
     def post(self):
-        """Вход пользователя"""
+        # """Вход пользователя"""
         data = request.json
         username = data['username']
         password = data['password']
@@ -198,7 +205,7 @@ class SignOut(Resource):
 
 @api.route('/api/Authentication/Validate')
 class ValidateToken(Resource):
-    @api.param('accessToken', 'JWT токен')
+    # @api.param('accessToken', 'JWT токен')
     def get(self):
         access_token = request.args.get('accessToken')
         try:
@@ -227,7 +234,7 @@ class ValidateToken(Resource):
 
 @api.route('/api/Authentication/Refresh')
 class RefreshToken(Resource):
-    @auth_ns.expect(refresh_model)
+    # @auth_ns.expect(refresh_model)
     def post(self):
         data = request.json
         refresh_token = data['refreshToken']
@@ -257,7 +264,7 @@ class GetAccount(Resource):
 @api.route('/api/Accounts/Update')
 class UpdateAccount(Resource):
     @jwt_required()
-    @api.expect(update_model)
+    # @api.expect(update_model)
     def put(self):
         current_user = get_jwt_identity()
         data = request.json
@@ -318,7 +325,7 @@ class GetAllAccounts(Resource):
 @api.route('/api/Accounts')
 class CreateAccount(Resource):
     @jwt_required()
-    @api.expect(signup_model)
+    # @api.expect(signup_model)
     def post(self):
         current_user = get_jwt_identity()
         user = find_user_by_username(current_user)
@@ -334,7 +341,7 @@ class CreateAccount(Resource):
 @api.route('/api/Accounts/<int:id>')
 class UpdateAccountById(Resource):
     @jwt_required()
-    @api.expect(signup_model)
+    # @api.expect(signup_model)
     def put(self, id):
         current_user = get_jwt_identity()
         admin_user = find_user_by_username(current_user)
