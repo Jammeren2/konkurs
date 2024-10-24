@@ -16,8 +16,17 @@ app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 app.config['SWAGGER'] = {
     'title': 'Account API',
-    'uiversion': 3
+    'uiversion': 3,
+    'swagger_ui': True,  # Включение Swagger UI
+    'hide_topbar': True,  # Скрыть шапку
+    'url_prefix': '/',  # Изменение URL на '/'
+    'swagger_ui_parameters': {
+        'docExpansion': 'none',  # Сворачивание всех разделов по умолчанию
+        'layout': 'BaseLayout',  # Без шапки
+    }
 }
+
+
 swagger = Swagger(app, template_file='swagger.yaml')
 jwt = JWTManager(app)
 

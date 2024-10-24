@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   title: Account API
-  version: '1337.0'
+  version: '1.0'
   description: API для управления аккаунтами
   contact:
     name: API Support
