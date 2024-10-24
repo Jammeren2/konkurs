@@ -5,37 +5,35 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS
 import psycopg2
 from psycopg2.extras import RealDictCursor
-import json
-from urllib.parse import urlparse
 import os
+from urllib.parse import urlparse
 
 # Инициализация приложения Flask
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 jwt = JWTManager(app)
+
+# Настройка авторизации для Swagger
 authorizations = {
     'Bearer': {
         'type': 'apiKey',
         'in': 'header',
         'name': 'Authorization',
-        'description': 'Вставте токен в формате: Bearer токен'
+        'description': 'Вставьте токен в формате: Bearer <токен>'
     }
 }
 
 api = Api(app, 
-          version='1337.0', 
-          title='Account API', 
-          description='API для управления аккаунтами',
+          version='1.0', 
+          title='Account Management API', 
+          description='API для управления аккаунтами и аутентификацией пользователей',
           authorizations=authorizations,
           security='Bearer')
 
 def get_db_connection():
-    # Получаем URL базы данных из переменной окружения
     db_url = os.getenv('DATABASE_URL')
-    
     if db_url:
         result = urlparse(db_url)
-
         conn = psycopg2.connect(
             host=result.hostname,
             database=result.path[1:],  # Убираем начальный символ "/"
@@ -48,8 +46,7 @@ def get_db_connection():
     else:
         raise ValueError("DATABASE_URL не установлена в переменных окружения")
 
-
-# Swagger модели
+# Модели для документации Swagger
 signup_model = api.model('SignUp', {
     'lastName': fields.String(required=True, description='Фамилия пользователя'),
     'firstName': fields.String(required=True, description='Имя пользователя'),
@@ -71,6 +68,7 @@ update_model = api.model('UpdateAccount', {
     'firstName': fields.String(description='Новое имя'),
     'password': fields.String(description='Новый пароль')
 })
+
 
 
 def find_user_by_id(user_id):
@@ -166,66 +164,68 @@ class SignUp(Resource):
         return {'message': 'Account created', 'user_id': user_id}, 201
 
 
+@api.route('/api/Authentication/SignUp')
+@api.doc(tags=['Authentication'])
+class SignUp(Resource):
+    @api.expect(signup_model)
+    def post(self):
+        """Регистрация нового пользователя в системе"""
+        data = request.json
+        username = data['username']
+        if find_user_by_username(username):
+            return {'message': 'Пользователь уже существует'}, 400
+        user_id = create_user(data)
+        return {'message': 'Аккаунт создан', 'user_id': user_id}, 201
+
 @api.route('/api/Authentication/SignIn')
+@api.doc(tags=['Authentication'])
 class SignIn(Resource):
     @api.expect(signin_model)
     def post(self):
-        """Вход пользователя"""
+        """Вход пользователя в систему с получением токенов"""
         data = request.json
         username = data['username']
         password = data['password']
-
         user = find_user_by_username(username)
         if not user or user['password'] != password:
-            return {'message': 'Invalid credentials'}, 401
-
+            return {'message': 'Неверные учетные данные'}, 401
         access_token = create_access_token(identity=username)
         refresh_token = create_refresh_token(identity=username)
         return {'accessToken': access_token, 'refreshToken': refresh_token}, 200
 
-
 @api.route('/api/Authentication/SignOut')
+@api.doc(tags=['Authentication'])
 class SignOut(Resource):
     @jwt_required()
     def put(self):
-        """Выход"""
+        """Выход пользователя из системы"""
         current_user = get_jwt_identity()
-        return {'message': f'{current_user} signed out successfully'}, 200
-
+        return {'message': f'{current_user} вышел из системы'}, 200
 
 @api.route('/api/Authentication/Validate')
+@api.doc(tags=['Authentication'])
 class ValidateToken(Resource):
-    @api.param('accessToken', 'JWT токен')
+    @api.param('accessToken', 'JWT токен для проверки')
     def get(self):
+        """Проверка действительности JWT токена"""
         access_token = request.args.get('accessToken')
         try:
-            # Расшифровка токена
             decoded_token = decode_token(access_token)
             username = decoded_token['sub']
-            
-            # Находим пользователя по имени
             user = find_user_by_username(username)
             if not user:
-                return {"message": "User not found"}, 404
-            
-            # Получаем роли пользователя
+                return {"message": "Пользователь не найден"}, 404
             roles = get_user_roles(user['id'])
-            response_data = {
-                "message": "Token is valid",
-                "token_data": decoded_token,
-                "roles": roles
-            }
-            response = jsonify(response_data)
-            response.status_code = 200
-            return response
+            return {"message": "Токен валидный", "token_data": decoded_token, "roles": roles}, 200
         except Exception as e:
-            return {"message": "Invalid token", "error": str(e)}, 401
-
+            return {"message": "Невалидный токен", "error": str(e)}, 401
 
 @api.route('/api/Authentication/Refresh')
+@api.doc(tags=['Authentication'])
 class RefreshToken(Resource):
     @api.expect(refresh_model)
     def post(self):
+        """Обновление JWT токена по refresh токену"""
         data = request.json
         refresh_token = data['refreshToken']
         try:
@@ -233,39 +233,36 @@ class RefreshToken(Resource):
             new_access_token = create_access_token(identity=decoded_token['sub'])
             return {'accessToken': new_access_token}, 200
         except Exception as e:
-            return {"message": "Invalid refresh token", "error": str(e)}, 401
+            return {"message": "Невалидный refresh токен", "error": str(e)}, 401
 
 
+# Аккаунты
 @api.route('/api/Accounts/Me')
+@api.doc(tags=['Accounts'])
 class GetAccount(Resource):
     @jwt_required()
     def get(self):
+        """Получение данных текущего пользователя"""
         current_user = get_jwt_identity()
-        print(current_user)
         user = find_user_by_username(current_user)
-        print(user)
-        token = request.headers.get('Authorization').split()[1]
-        print(token)
         if user:
-            return {'id': user['id'], 'firstName': user['first_name'], 'lastName': user['last_name'], 'username': user['username'], '11': current_user}, 200
-        return {'message': 'User not found'}, 404
-
+            return {'id': user['id'], 'firstName': user['first_name'], 'lastName': user['last_name'], 'username': user['username']}, 200
+        return {'message': 'Пользователь не найден'}, 404
 
 @api.route('/api/Accounts/Update')
+@api.doc(tags=['Accounts'])
 class UpdateAccount(Resource):
     @jwt_required()
     @api.expect(update_model)
     def put(self):
+        """Обновление данных текущего пользователя"""
         current_user = get_jwt_identity()
         data = request.json
         user = find_user_by_username(current_user)
-
         if not user:
-            return {'message': 'User not found'}, 404
-
+            return {'message': 'Пользователь не найден'}, 404
         conn = get_db_connection()
         cur = conn.cursor()
-
         if 'firstName' in data:
             cur.execute("UPDATE users SET first_name = %s WHERE username = %s", (data['firstName'], current_user))
         if 'lastName' in data:
@@ -273,44 +270,33 @@ class UpdateAccount(Resource):
         if 'password' in data:
             hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256')
             cur.execute("UPDATE users SET password = %s WHERE username = %s", (hashed_password, current_user))
-
         conn.commit()
         cur.close()
         conn.close()
-
-        return {'message': 'Account updated successfully'}, 200
-
+        return {'message': 'Аккаунт успешно обновлен'}, 200
 
 @api.route('/api/Accounts')
+@api.doc(tags=['Accounts'])
 class GetAllAccounts(Resource):
     @jwt_required()
     def get(self):
+        """Получение списка всех пользователей (только для админов)"""
         current_user = get_jwt_identity()
         user = find_user_by_username(current_user)
-
         if not has_role(user['id'], 'Admin'):
-            return {'message': 'Access denied'}, 403
-
+            return {'message': 'Доступ запрещен'}, 403
         from_param = request.args.get('from', 0, type=int)
         count_param = request.args.get('count', 10, type=int)
-
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("SELECT * FROM users LIMIT %s OFFSET %s", (count_param, from_param))
-        rows = cur.fetchall()  # Fetch rows from database
+        rows = cur.fetchall()
         cur.close()
         conn.close()
-
-        # Преобразуем RealDictRow в обычные словари
         users = [dict(row) for row in rows]
-
-        # Преобразуем дату в строку формата ISO 8601
         for row in users:
             row['created_at'] = row['created_at'].isoformat()
-
-        response = jsonify(users)
-        response.status_code = 200 
-        return response
+        return jsonify(users), 200
 
 @api.route('/api/Accounts')
 class CreateAccount(Resource):
