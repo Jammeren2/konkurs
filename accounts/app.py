@@ -18,7 +18,7 @@ app.config['SWAGGER'] = {
     'title': 'Account API',
     'uiversion': 3
 }
-swagger = Swagger(app, template_file='model.yaml')
+swagger = Swagger(app, template_file='swagger.yaml')
 jwt = JWTManager(app)
 
 def get_db_connection():
