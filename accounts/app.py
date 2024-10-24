@@ -122,7 +122,7 @@ def create_user(data):
     
     user_id = cur.fetchone()['id']
     conn.commit()
-    add_roles_to_user(user_id, data.get('roles', ['User', 'Doctor']))
+    add_roles_to_user(user_id, data.get('roles', ['User']))
     cur.close()
     conn.close()
 
