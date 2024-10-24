@@ -144,8 +144,8 @@ services:
       ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
     ports:
       - "5601:5601"
-    volumes:
-      - ./config/kibana.yml:/usr/share/kibana/config/kibana.yml
+    # volumes:
+    #   - ./config/kibana.yml:/usr/share/kibana/config/kibana.yml
     depends_on:
       - elasticsearch
 
