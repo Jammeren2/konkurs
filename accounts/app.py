@@ -220,7 +220,7 @@ class RefreshToken(Resource):
         refresh_token = data.get('refreshToken')
         try:
             decoded_token = decode_token(refresh_token)
-            if decoded_token['fresh']:
+            if decoded_token['type'] == "refresh":
                 new_access_token = create_access_token(identity=decoded_token['sub'])
                 return {'accessToken': new_access_token}, 200
             else:
