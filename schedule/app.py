@@ -35,7 +35,7 @@ appointment_model = api.model('Appointment', {
 })
 
 timetables = Namespace('Расписание', description='CreateTimetable, Update, DeteteTimetable, DeleteDoctor, DeleteHospital, GetByDoctor, GetByRoom')
-appointment = Namespace('Талоны', description='GetAppointments, CreateAppointments, DeleteAppointments')
+appointment1 = Namespace('Талоны', description='GetAppointments, CreateAppointments, DeleteAppointments')
 
 
 # DB connection helper
@@ -475,9 +475,8 @@ class RoomSchedule(Resource):
         return jsonify(schedules)
 
 
-
+api.add_namespace(appointment1, path='/api')
 api.add_namespace(timetables, path='/api/Timetable')
-api.add_namespace(appointment, path='/api')
 
 
 # Запуск приложения
