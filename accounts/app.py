@@ -257,7 +257,7 @@ def get_account():
 
 @app.route('/api/Accounts/Update', methods=['PUT'])
 @jwt_required()
-def update_account():
+def update_account11():
     current_user = get_jwt_identity()
     data = request.json
     user = find_user_by_username(current_user)
