@@ -65,16 +65,14 @@ paths:
           schema:
             type: string
             properties:
-                - name: username
-                  in: "query"
-                  required: true
-                  type: string
-                  description: Имя для входа
-                - name: password
-                  in: "query"
-                  required: true
-                  type: string
-                  description: Пароль пользователя
+              - name: "username"
+                in: "query"
+                required: true
+                type: string
+              - name: "password"
+                in: "query"
+                required: true
+                type: string
             required:
               - username
               - password
