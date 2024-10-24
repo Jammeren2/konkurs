@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask_restx import Api, Resource, fields
+from flask_restx import Api, Resource, fields, Namespace
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity, decode_token
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS
@@ -49,20 +49,23 @@ def get_db_connection():
         raise ValueError("DATABASE_URL не установлена в переменных окружения")
 
 
+auth_ns = Namespace('Authorization', description='SignIn, SignUp, SignOut, Validate, Refresh')
+
+
 # Swagger модели
-signup_model = api.model('SignUp', {
+signup_model = api.auth_ns('SignUp', {
     'lastName': fields.String(required=True, description='Фамилия пользователя'),
     'firstName': fields.String(required=True, description='Имя пользователя'),
     'username': fields.String(required=True, description='Имя для входа'),
     'password': fields.String(required=True, description='Пароль пользователя')
 })
 
-signin_model = api.model('SignIn', {
+signin_model = api.auth_ns('SignIn', {
     'username': fields.String(required=True, description='Имя для входа'),
     'password': fields.String(required=True, description='Пароль пользователя')
 })
 
-refresh_model = api.model('Refresh', {
+refresh_model = api.auth_ns('Refresh', {
     'refreshToken': fields.String(required=True, description='Токен для обновления')
 })
 
