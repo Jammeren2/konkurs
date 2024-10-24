@@ -441,6 +441,6 @@ api.add_namespace(accounts, path='/api/Accounts')
 api.add_namespace(doctors, path='/api/Doctors')
 if __name__ == "__main__":
     app.run(
-        # port=8081, 
-        port=25565, 
+        port=8081, 
+        # port=25565, 
             host='0.0.0.0', debug=True)
