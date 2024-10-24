@@ -153,6 +153,7 @@ def find_user_by_username(username):
 class SignUp(Resource):
     @api.expect(signup_model)
     def post(self):
+        """Регистрация пользователя"""
         data = request.json
         username = data['username']
 
@@ -169,6 +170,7 @@ class SignUp(Resource):
 class SignIn(Resource):
     @api.expect(signin_model)
     def post(self):
+        """Вход пользователя"""
         data = request.json
         username = data['username']
         password = data['password']
@@ -186,6 +188,7 @@ class SignIn(Resource):
 class SignOut(Resource):
     @jwt_required()
     def put(self):
+        """Выход"""
         current_user = get_jwt_identity()
         return {'message': f'{current_user} signed out successfully'}, 200
 
