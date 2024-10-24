@@ -356,7 +356,7 @@ class UpdateDeleteAccount(Resource):
 
     @jwt_required()
     def delete(self, id):
-        """Мягкое удаление аккаунта по id"""
+        """Мягкое удаление аккаунта по id (только для админов)"""
         current_user = get_jwt_identity()
         user = find_user_by_username(current_user)
 
@@ -381,12 +381,12 @@ class GetDoctors(Resource):
     def get(self):
         """Получение списка докторов"""
         # Получаем текущего пользователя
-        current_user = get_jwt_identity()
+        # current_user = get_jwt_identity()
 
-        # Проверяем, есть ли у текущего пользователя права администратора
-        user = find_user_by_username(current_user)
-        if not user or not has_role(user['id'], 'Admin'):
-            return {'message': 'Access denied'}, 403
+        # # Проверяем, есть ли у текущего пользователя права администратора
+        # user = find_user_by_username(current_user)
+        # if not user or not has_role(user['id'], 'Admin'):
+        #     return {'message': 'Access denied'}, 403
 
         # Параметры фильтрации и пагинации
         name_filter = request.args.get('nameFilter', '')
@@ -419,12 +419,12 @@ class GetDoctorById(Resource):
     def get(self, id):
         """Получение информации о докторе по Id"""
         # Получаем текущего пользователя
-        current_user = get_jwt_identity()
+        # current_user = get_jwt_identity()
 
-        # Проверяем, есть ли у текущего пользователя права администратора
-        user = find_user_by_username(current_user)
-        if not user or not has_role(user['id'], 'Admin'):
-            return {'message': 'Access denied'}, 403
+        # # Проверяем, есть ли у текущего пользователя права администратора
+        # user = find_user_by_username(current_user)
+        # if not user or not has_role(user['id'], 'Admin'):
+        #     return {'message': 'Access denied'}, 403
 
         # Запрос для получения пользователя с ролью Doctor по ID
         conn = get_db_connection()
