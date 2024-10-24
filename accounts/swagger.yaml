@@ -55,30 +55,30 @@ paths:
 
   /api/Authentication/SignIn:
     post:
-      tags: ["Authentication"]
+      tags: [
+        "Authentication"
+      ]
       summary: Вход пользователя
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                  description: Имя для входа
-                password:
-                  type: string
-                  description: Пароль пользователя
-              required:
-                - username
-                - password
+      parameters:
+        - name: "username"
+          in: "body"
+          required: true
+          type: string
+          schema:
+            properties:
+              type: string
+        - name: "password"
+          in: "body"
+          required: true
+          type: string
+          schema:
+            properties:
+              type: string
       responses:
         '200':
           description: Успешный вход
         '401':
           description: UNAUTHORIZED
-
 
 
   /api/Authentication/SignOut:
