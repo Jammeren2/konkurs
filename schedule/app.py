@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, abort
-from flask_restx import Api, Resource, fields
+from flask_restx import Api, Resource, fields, Namespace
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -33,6 +33,10 @@ timetable_model = api.model('Timetable', {
 appointment_model = api.model('Appointment', {
     'time': fields.DateTime(required=True, description='Время записи на приём')
 })
+
+timetables = Namespace('Расписание', description='CreateTimetable, Update, DeteteTimetable, DeleteDoctor, DeleteHospital, GetByDoctor, GetByRoom')
+appointment = Namespace('Талоны', description='GetAppointments, CreateAppointments, DeleteAppointments')
+
 
 # DB connection helper
 def get_db_connection():
@@ -69,11 +73,12 @@ def validate_roles(token, required_roles):
         abort(500, 'Ошибка при валидации токена')
 
 
-@api.route('/api/Timetable')
+@timetables.route('/')
 class TimetableList(Resource):
     @jwt_required()
     @api.expect(timetable_model)
     def post(self):
+        """Создание новой записи в расписании"""
         token = request.headers.get('Authorization').split()[1]
         validate_roles(token, ['Admin', 'Manager'])
 
@@ -126,11 +131,12 @@ class TimetableList(Resource):
 
 
 # PUT /api/Timetable/{id} - обновление расписания
-@api.route('/api/Timetable/<int:id>')
+@timetables.route('/<int:id>')
 class Timetable(Resource):
     @jwt_required()
     @api.expect(timetable_model)
     def put(self, id):
+        """Обновление записи расписания"""
         token = request.headers.get('Authorization').split()[1]
         validate_roles(token, ['Admin', 'Manager'])
 
@@ -181,6 +187,7 @@ class Timetable(Resource):
 
     @jwt_required()
     def delete(self, id):
+        """ Удаление записи расписания"""
         token = request.headers.get('Authorization').split()[1]
         validate_roles(token, ['Admin', 'Manager'])
 
@@ -195,10 +202,11 @@ class Timetable(Resource):
 
 
 # DELETE /api/Timetable/Doctor/{id} - удаление всех записей расписания врача
-@api.route('/api/Timetable/Doctor/<int:doctor_id>')
+@timetables.route('/Doctor/<int:doctor_id>')
 class TimetableDoctor(Resource):
     @jwt_required()
     def delete(self, doctor_id):
+        """Удаление записей расписания доктора"""
         token = request.headers.get('Authorization').split()[1]
         validate_roles(token, ['Admin', 'Manager'])
 
@@ -213,10 +221,11 @@ class TimetableDoctor(Resource):
 
 
 # DELETE /api/Timetable/Hospital/{id} - удаление всех записей расписания больницы
-@api.route('/api/Timetable/Hospital/<int:hospital_id>')
+@timetables.route('/Hospital/<int:hospital_id>')
 class TimetableHospital(Resource):
     @jwt_required()
     def delete(self, hospital_id):
+        """Удаление записей расписания больницы"""
         token = request.headers.get('Authorization').split()[1]
         validate_roles(token, ['Admin', 'Manager'])
 
@@ -231,10 +240,11 @@ class TimetableHospital(Resource):
 
 
 # GET /api/Timetable/Hospital/{id} - получение расписания больницы
-@api.route('/api/Timetable/Hospital/<int:hospital_id>')
+@timetables.route('/Hospital/<int:hospital_id>')
 class HospitalSchedule(Resource):
     @jwt_required()
     def get(self, hospital_id):
+        """Получение расписания больницы по Id"""
         token = request.headers.get('Authorization').split()[1]
         validate_roles(token, ['Admin', 'Manager', 'Doctor', 'User'])
 
@@ -267,10 +277,11 @@ class HospitalSchedule(Resource):
 
 
 # GET /api/Timetable/Doctor/{id} - получение расписания врача
-@api.route('/api/Timetable/Doctor/<int:doctor_id>')
+@timetables.route('/Doctor/<int:doctor_id>')
 class DoctorSchedule(Resource):
     @jwt_required()
     def get(self, doctor_id):
+        """Получение расписания врача по Id"""
         identity = get_jwt_identity()
 
         from_time = request.args.get('from')
@@ -302,10 +313,11 @@ class DoctorSchedule(Resource):
 
 
 # GET /api/Timetable/{id}/Appointments - получение свободных талонов
-@api.route('/api/Timetable/<int:id>/Appointments')
+@api.route('/Timetable/<int:id>/Appointments')
 class TimetableAppointments(Resource):
     @jwt_required()
     def get(self, id):
+        """Получение свободных талонов на приём."""
         identity = get_jwt_identity()
 
         conn = get_db_connection()
@@ -334,11 +346,12 @@ class TimetableAppointments(Resource):
         return jsonify(appointments)
 
 
-@api.route('/api/Timetable/<int:id>/Appointments')
+@api.route('/Timetable/<int:id>/Appointments')
 class AppointmentCreate(Resource):
     @jwt_required()
     @api.expect(appointment_model)
     def post(self, id):
+        """Записаться на приём"""
         identity = get_jwt_identity()
         token = request.headers.get('Authorization').split()[1]
         data = request.json
@@ -385,10 +398,11 @@ class AppointmentCreate(Resource):
 
 
 # DELETE /api/Appointment/{id} - отмена записи
-@api.route('/api/Appointment/<int:id>')
+@api.route('/Appointment/<int:id>')
 class AppointmentDelete(Resource):
     @jwt_required()
     def delete(self, id):
+        """Отменить запись на приём"""
         identity = get_jwt_identity()
         token = request.headers.get('Authorization').split()[1]
 
@@ -423,10 +437,11 @@ class AppointmentDelete(Resource):
         return jsonify({'message': 'Запись отменена'})
 
 
-@api.route('/api/Timetable/Hospital/<int:hospital_id>/Room/<int:room_id>')
+@timetables.route('/Hospital/<int:hospital_id>/Room/<int:room_id>')
 class RoomSchedule(Resource):
     @jwt_required()
     def get(self, hospital_id, room_id):
+        """Получение расписания кабинета больницы"""
         identity = get_jwt_identity()
         token = request.headers.get('Authorization').split()[1]
         validate_roles(token, ['Admin', 'Manager', 'Doctor'])
@@ -458,6 +473,11 @@ class RoomSchedule(Resource):
         conn.close()
 
         return jsonify(schedules)
+
+
+
+api.add_namespace(timetables, path='/api/Timetable')
+api.add_namespace(appointment, path='/api')
 
 
 # Запуск приложения
