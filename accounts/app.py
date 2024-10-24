@@ -217,16 +217,20 @@ class RefreshToken(Resource):
     def post(self):
         """Обновление JWT токена по refresh токену"""
         data = request.json
-        refresh_token = data['refreshToken']
+        refresh_token = data.get('refreshToken')
         try:
             decoded_token = decode_token(refresh_token)
             if decoded_token['fresh']:
                 new_access_token = create_access_token(identity=decoded_token['sub'])
                 return {'accessToken': new_access_token}, 200
             else:
-                return {"message": "Это не refresh токен", "error": str(e)}, 402
+                return {"message": "Это не refresh токен"}, 402
+        except jwt.ExpiredSignatureError:
+            return {"message": "Refresh токен истек"}, 401
+        except jwt.InvalidTokenError:
+            return {"message": "Невалидный refresh токен"}, 401
         except Exception as e:
-            return {"message": "Невалидный refresh токен", "error": str(e)}, 401
+            return {"message": "Произошла ошибка", "error": str(e)}, 500
 
 
 # Аккаунты
