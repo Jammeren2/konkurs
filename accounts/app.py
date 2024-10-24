@@ -7,7 +7,6 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import os
 from urllib.parse import urlparse
-import json
 
 # Инициализация приложения Flask
 app = Flask(__name__)
@@ -48,12 +47,11 @@ def get_db_connection():
     else:
         raise ValueError("DATABASE_URL не установлена в переменных окружения")
     
-@api.documentation
-def custom_swagger_ui():
-    with open('swagger.json') as f:
-        return jsonify(json.load(f))
 
-authorizations = Namespace('todos', description='TODO operations')
+authorization = Namespace('authorization', description='TODO operations')
+
+
+
 
 # Модели для документации Swagger
 signup_model = api.model('SignUp', {
@@ -173,8 +171,7 @@ class SignUp(Resource):
         return {'message': 'Account created', 'user_id': user_id}, 201
 
 
-@api.route('/api/Authentication/SignUp')
-@api.doc(tags=['Authentication'])
+@authorization.route('/api/Authentication/SignUp')
 class SignUp(Resource):
     @api.expect(signup_model)
     def post(self):
@@ -186,8 +183,7 @@ class SignUp(Resource):
         user_id = create_user(data)
         return {'message': 'Аккаунт создан', 'user_id': user_id}, 201
 
-@api.route('/api/Authentication/SignIn')
-@api.doc(tags=['Authentication'])
+@authorization.route('/api/Authentication/SignIn')
 class SignIn(Resource):
     @api.expect(signin_model)
     def post(self):
@@ -202,8 +198,7 @@ class SignIn(Resource):
         refresh_token = create_refresh_token(identity=username)
         return {'accessToken': access_token, 'refreshToken': refresh_token}, 200
 
-@api.route('/api/Authentication/SignOut')
-@api.doc(tags=['Authentication'])
+@authorization.route('/api/Authentication/SignOut')
 class SignOut(Resource):
     @jwt_required()
     def put(self):
@@ -211,8 +206,7 @@ class SignOut(Resource):
         current_user = get_jwt_identity()
         return {'message': f'{current_user} вышел из системы'}, 200
 
-@api.route('/api/Authentication/Validate')
-@api.doc(tags=['Authentication'])
+@authorization.route('/api/Authentication/Validate')
 class ValidateToken(Resource):
     @api.param('accessToken', 'JWT токен для проверки')
     def get(self):
@@ -229,8 +223,7 @@ class ValidateToken(Resource):
         except Exception as e:
             return {"message": "Невалидный токен", "error": str(e)}, 401
 
-@api.route('/api/Authentication/Refresh')
-@api.doc(tags=['Authentication'])
+@authorization.route('/api/Authentication/Refresh')
 class RefreshToken(Resource):
     @api.expect(refresh_model)
     def post(self):
@@ -464,6 +457,6 @@ class GetDoctorById(Resource):
             return response
         return {'message': 'Doctor not found'}, 404
 
-
+api.add_namespace(authorization, path='/')
 if __name__ == "__main__":
     app.run(port=8081, host='0.0.0.0', debug=True)
