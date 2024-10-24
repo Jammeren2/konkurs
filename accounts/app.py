@@ -53,19 +53,19 @@ auth_ns = Namespace('Authorization', description='SignIn, SignUp, SignOut, Valid
 api.add_namespace(auth_ns)
 
 # Swagger модели
-signup_model = api.auth_ns('SignUp', {
+signup_model = auth_ns.model('SignUp', {
     'lastName': fields.String(required=True, description='Фамилия пользователя'),
     'firstName': fields.String(required=True, description='Имя пользователя'),
     'username': fields.String(required=True, description='Имя для входа'),
     'password': fields.String(required=True, description='Пароль пользователя')
 })
 
-signin_model = api.auth_ns('SignIn', {
+signin_model = auth_ns.model('SignIn', {
     'username': fields.String(required=True, description='Имя для входа'),
     'password': fields.String(required=True, description='Пароль пользователя')
 })
 
-refresh_model = api.auth_ns('Refresh', {
+refresh_model = auth_ns.model('Refresh', {
     'refreshToken': fields.String(required=True, description='Токен для обновления')
 })
 
