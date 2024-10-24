@@ -16,8 +16,7 @@ app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 swagger_config = {
     "headers": [
-        ('Access-Control-Allow-Origin', '*'),
-        ('Access-Control-Allow-Methods', "GET, POST"),
+
     ],
     "specs": [
         {

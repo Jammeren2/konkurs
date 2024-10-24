@@ -61,7 +61,7 @@ paths:
         - in: body
           name: body
           schema:
-            type: object
+            type: string
             properties:
               username:
                 type: string
