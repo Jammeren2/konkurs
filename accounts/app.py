@@ -29,7 +29,11 @@ api = Api(app,
           title='Account Management API', 
           description='API для управления аккаунтами и аутентификацией пользователей',
           authorizations=authorizations,
-          contact = 'https://github.com/Jammeren2/konkurs',
+          contact = {
+  "name": "API Support",
+  "url": "https://github.com/Jammeren2/konkurs",
+  "email": "nikitin.ko7@gmail.com"
+},
           security='Bearer')
 
 def get_db_connection():
