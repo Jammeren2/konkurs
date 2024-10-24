@@ -62,18 +62,23 @@ paths:
           schema:
             type: string
             properties:
-              username:
-                type: string
-                description: Имя для входа
-              password:
-                type: string
-                description: Пароль пользователя
+                - name: 'username'
+                  required: true
+                  type: string
+                  description: Имя для входа
+                - name: 'password'
+                  required: true
+                  type: string
+                  description: Пароль пользователя
             required:
               - username
               - password
       responses:
         '200':
           description: Успешный вход
+        '401':
+          description: UNAUTHORIZED
+
 
   /api/Authentication/SignOut:
     put:
