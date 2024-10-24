@@ -49,8 +49,8 @@ def get_db_connection():
     
 
 authorization = Namespace('Авторизация', description='SignIn, SignUp, SignOut, Validate, Refresh')
-accounts = Namespace('Аккаунты', description='TODO operations')
-doctors = Namespace('Доктора', description='TODO operations')
+accounts = Namespace('Аккаунты', description='Create, GetAll, MyAccount, Update, UpdateById, Delete')
+doctors = Namespace('Доктора', description='GetAllDoctors, GetDoctorById')
 
 
 
@@ -367,6 +367,7 @@ class UpdateDeleteAccount(Resource):
 class GetDoctors(Resource):
     @jwt_required()
     def get(self):
+        """Получение списка докторов"""
         # Получаем текущего пользователя
         current_user = get_jwt_identity()
 
@@ -404,6 +405,7 @@ class GetDoctors(Resource):
 class GetDoctorById(Resource):
     @jwt_required()
     def get(self, id):
+        """Получение информации о докторе по Id"""
         # Получаем текущего пользователя
         current_user = get_jwt_identity()
 
