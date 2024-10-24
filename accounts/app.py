@@ -25,8 +25,6 @@ authorizations = {
 
 
 api = Api(app, 
-          default = None,
-          default_label=None,
           version='1.0', 
           title='Account Management API', 
           description='API для управления аккаунтами и аутентификацией пользователей',
