@@ -16,7 +16,7 @@ components:
       type: apiKey
       in: header
       name: Authorization
-      description: Вставьте токен в формате: Bearer токен
+      description: "Вставьте токен в формате: Bearer токен"
   schemas:
     SignUp:
       type: object
