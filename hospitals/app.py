@@ -61,7 +61,7 @@ hospital_model = api.model('Hospital', {
     'rooms': fields.List(fields.String, description='Список кабинетов')
 })
 
-hospital = Namespace('Авторизация', description='SignIn, SignUp, SignOut, Validate, Refresh')
+hospital = Namespace('Больницы', description='GetAllPagination, Create, GetById, Delete, EditById, GetRooms')
 
 
 
@@ -69,7 +69,7 @@ hospital = Namespace('Авторизация', description='SignIn, SignUp, Sign
 @hospital.route('/')
 class HospitalsList(Resource):
     @jwt_required()
-
+    @api.doc(params={'from': 'Начало выборки', 'count': 'Размер выборки'})
     def get(self):
         """Получение списка больниц с пагинацией"""
         from_param = request.args.get('from', 0, type=int)
@@ -106,7 +106,7 @@ class HospitalsList(Resource):
         cur.close()
         conn.close()
         response = jsonify({'message': 'Hospital created', 'hospital_id': hospital_id})
-        response.status_code = 200
+        response.status_code = 201  # Изменено на 201 Created
         return response
 
 @hospital.route('/<int:id>')
@@ -127,6 +127,7 @@ class Hospital(Resource):
         return jsonify(hospital)
 
     @jwt_required()
+    @api.expect(hospital_model)
     def put(self, id):
         """Изменение информации о больнице по Id (только для администраторов)"""
         token = request.headers.get('Authorization').split()[1]
