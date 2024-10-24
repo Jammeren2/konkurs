@@ -5,71 +5,18 @@ info:
   description: API для управления аккаунтами
   contact:
     name: API Support
-    url: http://www.example.com/support
-servers:
-  - url: http://localhost:8081
-    description: Local server
+    url: https://github.com/Jammeren2/konkurs
+host: localhost:8081
+schemes:
+  - http
+basePath: /
 
-components:
-  securitySchemes:
+securityDefinitions: 
     Bearer:
       type: apiKey
       in: header
       name: Authorization
       description: "Вставьте токен в формате: Bearer токен"
-  schemas:
-    SignUp:
-      type: object
-      properties:
-        lastName:
-          type: string
-          description: Фамилия пользователя
-        firstName:
-          type: string
-          description: Имя пользователя
-        username:
-          type: string
-          description: Имя для входа
-        password:
-          type: string
-          description: Пароль пользователя
-      required:
-        - lastName
-        - firstName
-        - username
-        - password
-    SignIn:
-      type: object
-      properties:
-        username:
-          type: string
-          description: Имя для входа
-        password:
-          type: string
-          description: Пароль пользователя
-      required:
-        - username
-        - password
-    Refresh:
-      type: object
-      properties:
-        refreshToken:
-          type: string
-          description: Токен для обновления
-      required:
-        - refreshToken
-    UpdateAccount:
-      type: object
-      properties:
-        lastName:
-          type: string
-          description: Новая фамилия
-        firstName:
-          type: string
-          description: Новое имя
-        password:
-          type: string
-          description: Новый пароль
 
 security:
   - Bearer: []
@@ -78,11 +25,29 @@ paths:
   /api/Authentication/SignUp:
     post:
       summary: Регистрация пользователя
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SignUp'
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              lastName:
+                type: string
+                description: Фамилия пользователя
+              firstName:
+                type: string
+                description: Имя пользователя
+              username:
+                type: string
+                description: Имя для входа
+              password:
+                type: string
+                description: Пароль пользователя
+            required:
+              - lastName
+              - firstName
+              - username
+              - password
       responses:
         '201':
           description: Account created
@@ -92,11 +57,21 @@ paths:
   /api/Authentication/SignIn:
     post:
       summary: Вход пользователя
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SignIn'
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+                description: Имя для входа
+              password:
+                type: string
+                description: Пароль пользователя
+            required:
+              - username
+              - password
       responses:
         '200':
           description: Успешный вход
@@ -129,11 +104,17 @@ paths:
   /api/Authentication/Refresh:
     post:
       summary: Обновление токена
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Refresh'
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              refreshToken:
+                type: string
+                description: Токен для обновления
+            required:
+              - refreshToken
       responses:
         '200':
           description: Новый токен доступа
@@ -154,11 +135,21 @@ paths:
       summary: Обновить информацию о текущем аккаунте
       security:
         - Bearer: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateAccount'
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              lastName:
+                type: string
+                description: Новая фамилия
+              firstName:
+                type: string
+                description: Новое имя
+              password:
+                type: string
+                description: Новый пароль
       responses:
         '200':
           description: Account updated successfully
@@ -190,11 +181,29 @@ paths:
       summary: Создать нового пользователя
       security:
         - Bearer: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SignUp'
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              lastName:
+                type: string
+                description: Фамилия пользователя
+              firstName:
+                type: string
+                description: Имя пользователя
+              username:
+                type: string
+                description: Имя для входа
+              password:
+                type: string
+                description: Пароль пользователя
+            required:
+              - lastName
+              - firstName
+              - username
+              - password
       responses:
         '201':
           description: Account created
@@ -213,11 +222,23 @@ paths:
             type: integer
           required: true
           description: ID пользователя
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SignUp'
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              lastName:
+                type: string
+                description: Фамилия пользователя
+              firstName:
+                type: string
+                description: Имя пользователя
+              username:
+                type: string
+                description: Имя для входа
+              password:
+                type: string
+                description: Пароль пользователя
       responses:
         '200':
           description: Account updated successfully

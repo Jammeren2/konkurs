@@ -14,20 +14,28 @@ from flasgger import Swagger
 # Инициализация приложения Flask
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
-app.config['SWAGGER'] = {
-    'title': 'Account API',
-    'uiversion': 3,
-    'swagger_ui': True,  # Включение Swagger UI
-    'hide_topbar': True,  # Скрыть шапку
-    'url_prefix': '/',  # Изменение URL на '/'
-    'swagger_ui_parameters': {
-        'docExpansion': 'none',  # Сворачивание всех разделов по умолчанию
-        'layout': 'BaseLayout',  # Без шапки
-    }
+swagger_config = {
+    "headers": [
+        ('Access-Control-Allow-Origin', '*'),
+        ('Access-Control-Allow-Methods', "GET, POST"),
+    ],
+    "specs": [
+        {
+            "endpoint": 'AccoutsApi',
+            "route": '/AccoutsApi.json',
+            "rule_filter": lambda rule: True,
+            "model_filter": lambda tag: True,
+        }
+    ],
+    "static_url_path": "/flasgger_static",
+    "swagger_ui": True,
+    "specs_route": "/",
+    "hide_top_bar": True
+
 }
 
 
-swagger = Swagger(app, template_file='swagger.yaml')
+swagger = Swagger(app, template_file='swagger.yaml', config=swagger_config)
 jwt = JWTManager(app)
 
 def get_db_connection():
@@ -419,4 +427,7 @@ def get_doctor_by_id(id):
 
 
 if __name__ == "__main__":
-    app.run(port=8081, host='0.0.0.0', debug=True)
+    app.run(
+        # port=8081, 
+        port=25565,
+        host='0.0.0.0', debug=True)
