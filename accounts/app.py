@@ -263,12 +263,12 @@ class UpdateAccount(Resource):
         if 'lastName' in data:
             cur.execute("UPDATE users SET last_name = %s WHERE username = %s", (data['lastName'], current_user))
         if 'password' in data:
-            hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256')
-            cur.execute("UPDATE users SET password = %s WHERE username = %s", (hashed_password, current_user))
+            cur.execute("UPDATE users SET password = %s WHERE username = %s", (data['password'], current_user))
         conn.commit()
         cur.close()
         conn.close()
         return {'message': 'Аккаунт успешно обновлен'}, 200
+
 
 
 @accounts.route('/')
