@@ -48,26 +48,26 @@ def get_db_connection():
         raise ValueError("DATABASE_URL не установлена в переменных окружения")
 
 
-authorization = Namespace('todos', description='TODO operations')
+authorizations = Namespace('todos', description='TODO operations')
 
 # Модели для документации Swagger
-signup_model = authorization.model('SignUp', {
+signup_model = api.model('SignUp', {
     'lastName': fields.String(required=True, description='Фамилия пользователя'),
     'firstName': fields.String(required=True, description='Имя пользователя'),
     'username': fields.String(required=True, description='Имя для входа'),
     'password': fields.String(required=True, description='Пароль пользователя')
 })
 
-signin_model = authorization.model('SignIn', {
+signin_model = api.model('SignIn', {
     'username': fields.String(required=True, description='Имя для входа'),
     'password': fields.String(required=True, description='Пароль пользователя')
 })
 
-refresh_model = authorization.model('Refresh', {
+refresh_model = api.model('Refresh', {
     'refreshToken': fields.String(required=True, description='Токен для обновления')
 })
 
-update_model = authorization.model('UpdateAccount', {
+update_model = api.model('UpdateAccount', {
     'lastName': fields.String(description='Новая фамилия'),
     'firstName': fields.String(description='Новое имя'),
     'password': fields.String(description='Новый пароль')
@@ -168,7 +168,7 @@ class SignUp(Resource):
         return {'message': 'Account created', 'user_id': user_id}, 201
 
 
-@api.route('/api/Authentication/SignUp')
+@authorizations.route('/api/Authentication/SignUp')
 @api.doc(tags=['Authentication'])
 class SignUp(Resource):
     @api.expect(signup_model)
@@ -181,7 +181,7 @@ class SignUp(Resource):
         user_id = create_user(data)
         return {'message': 'Аккаунт создан', 'user_id': user_id}, 201
 
-@api.route('/api/Authentication/SignIn')
+@authorizations.route('/api/Authentication/SignIn')
 @api.doc(tags=['Authentication'])
 class SignIn(Resource):
     @api.expect(signin_model)
@@ -197,7 +197,7 @@ class SignIn(Resource):
         refresh_token = create_refresh_token(identity=username)
         return {'accessToken': access_token, 'refreshToken': refresh_token}, 200
 
-@api.route('/api/Authentication/SignOut')
+@authorizations.route('/api/Authentication/SignOut')
 @api.doc(tags=['Authentication'])
 class SignOut(Resource):
     @jwt_required()
@@ -206,7 +206,7 @@ class SignOut(Resource):
         current_user = get_jwt_identity()
         return {'message': f'{current_user} вышел из системы'}, 200
 
-@api.route('/api/Authentication/Validate')
+@authorizations.route('/api/Authentication/Validate')
 @api.doc(tags=['Authentication'])
 class ValidateToken(Resource):
     @api.param('accessToken', 'JWT токен для проверки')
@@ -224,7 +224,7 @@ class ValidateToken(Resource):
         except Exception as e:
             return {"message": "Невалидный токен", "error": str(e)}, 401
 
-@api.route('/api/Authentication/Refresh')
+@authorizations.route('/api/Authentication/Refresh')
 @api.doc(tags=['Authentication'])
 class RefreshToken(Resource):
     @api.expect(refresh_model)
