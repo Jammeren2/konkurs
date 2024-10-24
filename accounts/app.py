@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask_restx import Api, Resource, fields
+from flask_restx import Api, Resource, fields, Namespace
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity, decode_token
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS
@@ -22,6 +22,7 @@ authorizations = {
         'description': 'Вставьте токен в формате: Bearer <токен>'
     }
 }
+
 
 api = Api(app, 
           version='1.0', 
@@ -46,24 +47,27 @@ def get_db_connection():
     else:
         raise ValueError("DATABASE_URL не установлена в переменных окружения")
 
+
+authorization = Namespace('todos', description='TODO operations')
+
 # Модели для документации Swagger
-signup_model = api.model('SignUp', {
+signup_model = authorization.model('SignUp', {
     'lastName': fields.String(required=True, description='Фамилия пользователя'),
     'firstName': fields.String(required=True, description='Имя пользователя'),
     'username': fields.String(required=True, description='Имя для входа'),
     'password': fields.String(required=True, description='Пароль пользователя')
 })
 
-signin_model = api.model('SignIn', {
+signin_model = authorization.model('SignIn', {
     'username': fields.String(required=True, description='Имя для входа'),
     'password': fields.String(required=True, description='Пароль пользователя')
 })
 
-refresh_model = api.model('Refresh', {
+refresh_model = authorization.model('Refresh', {
     'refreshToken': fields.String(required=True, description='Токен для обновления')
 })
 
-update_model = api.model('UpdateAccount', {
+update_model = authorization.model('UpdateAccount', {
     'lastName': fields.String(description='Новая фамилия'),
     'firstName': fields.String(description='Новое имя'),
     'password': fields.String(description='Новый пароль')
