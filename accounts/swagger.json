@@ -1,0 +1,343 @@
+{
+    "swagger": "2.0",
+    "basePath": "/",
+    "paths": {
+      "/api/Accounts": {
+        "post": {
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          },
+          "operationId": "post_create_account",
+          "parameters": [
+            {
+              "name": "payload",
+              "required": true,
+              "in": "body",
+              "schema": {
+                "$ref": "#/definitions/SignUp"
+              }
+            }
+          ],
+          "tags": [
+            "default"
+          ]
+        }
+      },
+      "/api/Accounts/Me": {
+        "get": {
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          },
+          "summary": "Получение данных текущего пользователя",
+          "operationId": "get_get_account",
+          "tags": [
+            "default"
+          ]
+        }
+      },
+      "/api/Accounts/Update": {
+        "put": {
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          },
+          "summary": "Обновление данных текущего пользователя",
+          "operationId": "put_update_account",
+          "parameters": [
+            {
+              "name": "payload",
+              "required": true,
+              "in": "body",
+              "schema": {
+                "$ref": "#/definitions/UpdateAccount"
+              }
+            }
+          ],
+          "tags": [
+            "default"
+          ]
+        }
+      },
+      "/api/Accounts/{id}": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "delete": {
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          },
+          "operationId": "delete_delete_account",
+          "tags": [
+            "default"
+          ]
+        }
+      },
+      "/api/Authentication/Refresh": {
+        "post": {
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          },
+          "summary": "Обновление JWT токена по refresh токену",
+          "operationId": "post_refresh_token",
+          "parameters": [
+            {
+              "name": "payload",
+              "required": true,
+              "in": "body",
+              "schema": {
+                "$ref": "#/definitions/Refresh"
+              }
+            }
+          ],
+          "tags": [
+            "default"
+          ]
+        }
+      },
+      "/api/Authentication/SignIn": {
+        "post": {
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          },
+          "summary": "Вход пользователя в систему с получением токенов",
+          "operationId": "post_sign_in",
+          "parameters": [
+            {
+              "name": "payload",
+              "required": true,
+              "in": "body",
+              "schema": {
+                "$ref": "#/definitions/SignIn"
+              }
+            }
+          ],
+          "tags": [
+            "default"
+          ]
+        }
+      },
+      "/api/Authentication/SignOut": {
+        "put": {
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          },
+          "summary": "Выход пользователя из системы",
+          "operationId": "put_sign_out",
+          "tags": [
+            "default"
+          ]
+        }
+      },
+      "/api/Authentication/SignUp": {
+        "post": {
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          },
+          "summary": "Регистрация нового пользователя в системе",
+          "operationId": "post_sign_up",
+          "parameters": [
+            {
+              "name": "payload",
+              "required": true,
+              "in": "body",
+              "schema": {
+                "$ref": "#/definitions/SignUp"
+              }
+            }
+          ],
+          "tags": [
+            "default"
+          ]
+        }
+      },
+      "/api/Authentication/Validate": {
+        "get": {
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          },
+          "summary": "Проверка действительности JWT токена",
+          "operationId": "get_validate_token",
+          "parameters": [
+            {
+              "in": "query",
+              "description": "JWT токен для проверки",
+              "name": "accessToken",
+              "type": "string"
+            }
+          ],
+          "tags": [
+            "default"
+          ]
+        }
+      },
+      "/api/Doctors": {
+        "get": {
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          },
+          "operationId": "get_get_doctors",
+          "tags": [
+            "default"
+          ]
+        }
+      },
+      "/api/Doctors/{id}": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "get": {
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          },
+          "operationId": "get_get_doctor_by_id",
+          "tags": [
+            "default"
+          ]
+        }
+      }
+    },
+    "info": {
+      "title": "Account Management API",
+      "version": "1.0",
+      "description": "API для управления аккаунтами и аутентификацией пользователей"
+    },
+    "produces": [
+      "application/json"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "securityDefinitions": {
+      "Bearer": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Вставьте токен в формате: Bearer \u003Cтокен\u003E"
+      }
+    },
+    "security": [
+      {
+        "Bearer": []
+      }
+    ],
+    "tags": [
+      {
+        "name": "default",
+        "description": "Default namespace"
+      }
+    ],
+    "definitions": {
+      "SignUp": {
+        "required": [
+          "firstName",
+          "lastName",
+          "password",
+          "username"
+        ],
+        "properties": {
+          "lastName": {
+            "type": "string",
+            "description": "Фамилия пользователя"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Имя пользователя"
+          },
+          "username": {
+            "type": "string",
+            "description": "Имя для входа"
+          },
+          "password": {
+            "type": "string",
+            "description": "Пароль пользователя"
+          }
+        },
+        "type": "object"
+      },
+      "SignIn": {
+        "required": [
+          "password",
+          "username"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Имя для входа"
+          },
+          "password": {
+            "type": "string",
+            "description": "Пароль пользователя"
+          }
+        },
+        "type": "object"
+      },
+      "Refresh": {
+        "required": [
+          "refreshToken"
+        ],
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Токен для обновления"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateAccount": {
+        "properties": {
+          "lastName": {
+            "type": "string",
+            "description": "Новая фамилия"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Новое имя"
+          },
+          "password": {
+            "type": "string",
+            "description": "Новый пароль"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "responses": {
+      "ParseError": {
+        "description": "When a mask can't be parsed"
+      },
+      "MaskError": {
+        "description": "When any error occurs on mask"
+      }
+    }
+  }

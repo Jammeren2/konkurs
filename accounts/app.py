@@ -7,6 +7,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import os
 from urllib.parse import urlparse
+import json
 
 # Инициализация приложения Flask
 app = Flask(__name__)
@@ -46,7 +47,11 @@ def get_db_connection():
         return conn
     else:
         raise ValueError("DATABASE_URL не установлена в переменных окружения")
-
+    
+@api.documentation
+def custom_swagger_ui():
+    with open('swagger.json') as f:
+        return jsonify(json.load(f))
 
 authorizations = Namespace('todos', description='TODO operations')
 
