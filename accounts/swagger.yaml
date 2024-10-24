@@ -65,23 +65,15 @@ paths:
           required: true
           type: string
           schema:
-            type: string
             properties:
-                - name: username
-                  in: "query"
-                  required: true
-                  type: string
+              type: string
         - name: "password"
           in: "query"
           required: true
           type: string
           schema:
-            type: string
             properties:
-                - name: password
-                  in: "query"
-                  required: true
-                  type: string
+              type: string
       responses:
         '200':
           description: Успешный вход
