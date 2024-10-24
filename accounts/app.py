@@ -50,7 +50,7 @@ def get_db_connection():
 
 
 auth_ns = Namespace('Authorization', description='SignIn, SignUp, SignOut, Validate, Refresh')
-api.add_namespace(auth_ns)
+api.add_namespace(auth_ns, path='/Authentication')
 
 # Swagger модели
 signup_model = auth_ns.model('SignUp', {
@@ -154,7 +154,7 @@ def find_user_by_username(username):
 
 @api.route('/api/Authentication/SignUp')
 class SignUp(Resource):
-    @api.expect(signup_model)
+    @auth_ns.expect(signup_model)
     def post(self):
         """Регистрация пользователя"""
         data = request.json
@@ -171,7 +171,7 @@ class SignUp(Resource):
 
 @api.route('/api/Authentication/SignIn')
 class SignIn(Resource):
-    @api.expect(signin_model)
+    @auth_ns.expect(signin_model)
     def post(self):
         """Вход пользователя"""
         data = request.json
@@ -227,7 +227,7 @@ class ValidateToken(Resource):
 
 @api.route('/api/Authentication/Refresh')
 class RefreshToken(Resource):
-    @api.expect(refresh_model)
+    @auth_ns.expect(refresh_model)
     def post(self):
         data = request.json
         refresh_token = data['refreshToken']
