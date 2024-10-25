@@ -470,7 +470,7 @@ class RoomSchedule(Resource):
         query = '''
             select * from timetable where 
                 hospital_id = %s and
-                room = "%s"
+                room = '%s'
         '''
         params = [hospital_id, room_name]
 
