@@ -398,15 +398,24 @@ class AppointmentCreate(Resource):
         end_time = timetable['end_time']
         appointments = []
 
+        # Получение всех существующих записей для данного расписания
+        cur.execute('''
+            SELECT appointment_time FROM appointments WHERE timetable_id=%s
+        ''', (id,))
+        existing_appointments = {row['appointment_time'] for row in cur.fetchall()}
+
         current_time = start_time
         while current_time < end_time:
-            appointments.append(current_time.isoformat())
+            # Проверяем, занято ли время
+            if current_time not in existing_appointments:
+                appointments.append(current_time.isoformat())
             current_time += timedelta(minutes=30)
 
         cur.close()
         conn.close()
 
         return jsonify(appointments)
+
 
 # DELETE /api/Appointment/{id} - отмена записи
 @appointment1.route('/Appointment/<int:id>')
