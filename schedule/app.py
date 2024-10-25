@@ -84,14 +84,19 @@ class TimetableList(Resource):
         validate_roles(token, ['Admin', 'Manager'])
 
         data = request.json
-        from_time = datetime.fromisoformat(data['from'])
-        to_time = datetime.fromisoformat(data['to'])
+        
+        # Проверка формата ISO8601 и преобразование в datetime
+        try:
+            from_time = datetime.fromisoformat(data['from'])
+            to_time = datetime.fromisoformat(data['to'])
+        except ValueError:
+            abort(400, 'Дата должна быть в формате ISO 8601')
 
-        # Проверка кратности 30 минут
+        # Проверка кратности 30 минут и времени
         if (from_time.minute % 30 != 0 or to_time.minute % 30 != 0 or
                 from_time.second != 0 or to_time.second != 0 or
                 (to_time - from_time).total_seconds() > 12 * 3600):
-            abort(400, 'Время некорректно')
+            abort(400, 'Время некорректно, должно быть кратно 30 минутам')
 
         # Проверка существования доктора по ID
         doctorId = data['doctorId']
@@ -128,7 +133,6 @@ class TimetableList(Resource):
         conn.close()
 
         return jsonify({'id': new_id})
-
 
 
 # PUT /api/Timetable/{id} - обновление расписания
