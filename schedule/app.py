@@ -455,10 +455,10 @@ class AppointmentDelete(Resource):
         return jsonify({'message': 'Запись отменена'})
 
 
-@timetables.route('/Hospital/<int:hospital_id>/Room/<int:room_id>')
+@timetables.route('/Hospital/<int:hospital_id>/Room/<int:room_name>')
 class RoomSchedule(Resource):
     @jwt_required()
-    def get(self, hospital_id, room_id):
+    def get(self, hospital_id, room_name):
         """Получение расписания кабинета больницы"""
         identity = get_jwt_identity()
         token = request.headers.get('Authorization').split()[1]
@@ -470,9 +470,9 @@ class RoomSchedule(Resource):
         query = '''
             select * from timetable where 
                 hospital_id = %s and
-                room = '%s'
+                room = "%s"
         '''
-        params = [hospital_id, room_id]
+        params = [hospital_id, room_name]
 
         # Добавляем временные параметры только если они указаны
         if from_time:
@@ -483,6 +483,8 @@ class RoomSchedule(Resource):
             query += ' AND end_time <= %s'
             params.append(to_time)
         
+        print(query)
+        print(params)
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute(query, params)
