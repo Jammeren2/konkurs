@@ -329,41 +329,6 @@ class DoctorSchedule(Resource):
         return jsonify(schedules)
 
 
-
-# GET /api/Timetable/{id}/Appointments - получение свободных талонов
-@appointment1.route('/Timetable/<int:id>/Appointments')
-class TimetableAppointments(Resource):
-    @jwt_required()
-    def get(self, id):
-        """Получение свободных талонов на приём."""
-        identity = get_jwt_identity()
-
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute('''
-            SELECT * FROM timetable WHERE id=%s
-        ''', (id,))
-        timetable = cur.fetchone()
-
-        if timetable is None:
-            abort(404, 'Запись не найдена')
-
-        # Вычисление доступных талонов (каждые 30 минут)
-        start_time = timetable['start_time']
-        end_time = timetable['end_time']
-        appointments = []
-
-        current_time = start_time
-        while current_time < end_time:
-            appointments.append(current_time.isoformat())
-            current_time += timedelta(minutes=30)
-
-        cur.close()
-        conn.close()
-
-        return jsonify(appointments)
-
-
 @appointment1.route('/Timetable/<int:id>/Appointments')
 class AppointmentCreate(Resource):
     @jwt_required()
@@ -413,7 +378,35 @@ class AppointmentCreate(Resource):
 
         return jsonify({'id': new_id})
 
+    @jwt_required()
+    def get(self, id):
+        """Получение свободных талонов на приём."""
+        identity = get_jwt_identity()
 
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute('''
+            SELECT * FROM timetable WHERE id=%s
+        ''', (id,))
+        timetable = cur.fetchone()
+
+        if timetable is None:
+            abort(404, 'Запись не найдена')
+
+        # Вычисление доступных талонов (каждые 30 минут)
+        start_time = timetable['start_time']
+        end_time = timetable['end_time']
+        appointments = []
+
+        current_time = start_time
+        while current_time < end_time:
+            appointments.append(current_time.isoformat())
+            current_time += timedelta(minutes=30)
+
+        cur.close()
+        conn.close()
+
+        return jsonify(appointments)
 
 # DELETE /api/Appointment/{id} - отмена записи
 @appointment1.route('/Appointment/<int:id>')
