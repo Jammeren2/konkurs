@@ -33,10 +33,10 @@ timetable_model = api.model('Timetable', {
 appointment_model = api.model('Appointment', {
     'time': fields.DateTime(required=True, description='Время записи на приём')
 })
-room_schedule_params = api.model('RoomScheduleParams', {
-    'from_time': fields.DateTime(description='Начало периода', required=True),
-    'to_time': fields.DateTime(description='Конец периода', required=True)
-})
+room_schedule_params = api.parser()
+room_schedule_params.add_argument('from_time', type=str, required=True, help='Начало периода в формате ISO 8601', location='args')
+room_schedule_params.add_argument('to_time', type=str, required=True, help='Конец периода в формате ISO 8601', location='args')
+
 
 appointment1 = Namespace('Талоны', description='GetAppointments, CreateAppointments, DeleteAppointments')
 timetables = Namespace('Расписание', description='CreateTimetable, Update, DeteteTimetable, DeleteDoctor, DeleteHospital, GetByDoctor, GetByRoom')
@@ -335,15 +335,15 @@ class DoctorSchedule(Resource):
 @timetables.route('/Hospital/<int:hospital_id>/Room/<string:room_name>')
 class RoomSchedule(Resource):
     @jwt_required()
-    @api.expect(room_schedule_params, validate=True)
+    @api.expect(room_schedule_params)
     def get(self, hospital_id, room_name):
         """Получение расписания кабинета больницы"""
         identity = get_jwt_identity()
         token = request.headers.get('Authorization').split()[1]
         validate_roles(token, ['Admin', 'Manager', 'Doctor'])
 
-        from_time = request.json.get('from_time')
-        to_time = request.json.get('to_time')
+        from_time = request.args.get('from_time')
+        to_time = request.args.get('to_time')
 
         query = '''
             SELECT * FROM timetable WHERE 
