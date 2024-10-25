@@ -120,6 +120,18 @@ class TimetableList(Resource):
         if hospital['id'] != hospitalId or hospital['is_deleted']:
             abort(404, 'Больница с таким id не найдена или удалена')
 
+        # Проверка существования кабинета
+        room_name = data['room']
+        rooms_response = requests.get(f'http://hospitals-service:8082/api/Hospitals/{hospitalId}/Rooms', headers=headers)
+        if rooms_response.status_code != 200:
+            abort(500, 'Ошибка при проверке кабинета')
+
+        rooms = rooms_response.json()
+        room_exists = any(room['room_name'] == room_name for room in rooms)
+
+        if not room_exists:
+            abort(404, 'Кабинет с таким названием не найден в указанной больнице')
+
         # Добавление записи в таблицу timetable
         conn = get_db_connection()
         cur = conn.cursor()
@@ -133,6 +145,7 @@ class TimetableList(Resource):
         conn.close()
 
         return jsonify({'id': new_id})
+
 
 
 # PUT /api/Timetable/{id} - обновление расписания
