@@ -329,6 +329,45 @@ class DoctorSchedule(Resource):
         return jsonify(schedules)
 
 
+@timetables.route('/Hospital/<int:hospital_id>/Room/<string:room_name>')
+class RoomSchedule(Resource):
+    @jwt_required()
+    def get(self, hospital_id, room_name):
+        """Получение расписания кабинета больницы"""
+        identity = get_jwt_identity()
+        token = request.headers.get('Authorization').split()[1]
+        validate_roles(token, ['Admin', 'Manager', 'Doctor'])
+
+        from_time = request.args.get('from')
+        to_time = request.args.get('to')
+
+        query = '''
+            SELECT * FROM timetable WHERE 
+                hospital_id = %s AND
+                room = %s
+        '''
+        params = [hospital_id, room_name]
+
+        # Добавляем временные параметры только если они указаны
+        if from_time:
+            query += ' AND start_time >= %s'
+            params.append(from_time)
+        
+        if to_time:
+            query += ' AND end_time <= %s'
+            params.append(to_time)
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute(query, params)
+        schedules = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        return jsonify(schedules)
+
+
+
 @appointment1.route('/Timetable/<int:id>/Appointments')
 class AppointmentCreate(Resource):
     @jwt_required()
@@ -457,44 +496,7 @@ class AppointmentDelete(Resource):
         return jsonify({'message': 'Запись отменена'})
 
 
-@timetables.route('/Hospital/<int:hospital_id>/Room/<int:room_name>')
-class RoomSchedule(Resource):
-    @jwt_required()
-    def get(self, hospital_id, room_name):
-        """Получение расписания кабинета больницы"""
-        identity = get_jwt_identity()
-        token = request.headers.get('Authorization').split()[1]
-        validate_roles(token, ['Admin', 'Manager', 'Doctor'])
 
-        from_time = request.args.get('from')
-        to_time = request.args.get('to')
-
-        query = '''
-            select * from timetable where 
-                hospital_id = %s and
-                room = '%s'
-        '''
-        params = [hospital_id, room_name]
-
-        # Добавляем временные параметры только если они указаны
-        if from_time:
-            query += ' AND start_time >= %s'
-            params.append(from_time)
-        
-        if to_time:
-            query += ' AND end_time <= %s'
-            params.append(to_time)
-        
-        print(query)
-        print(params)
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute(query, params)
-        schedules = cur.fetchall()
-        cur.close()
-        conn.close()
-        print(schedules)
-        return jsonify(schedules)
 
 
 api.add_namespace(appointment1, path='/api')
