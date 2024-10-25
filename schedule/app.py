@@ -33,7 +33,10 @@ timetable_model = api.model('Timetable', {
 appointment_model = api.model('Appointment', {
     'time': fields.DateTime(required=True, description='Время записи на приём')
 })
-
+room_schedule_params = api.model('RoomScheduleParams', {
+    'from_time': fields.DateTime(description='Начало периода', required=True),
+    'to_time': fields.DateTime(description='Конец периода', required=True)
+})
 
 appointment1 = Namespace('Талоны', description='GetAppointments, CreateAppointments, DeleteAppointments')
 timetables = Namespace('Расписание', description='CreateTimetable, Update, DeteteTimetable, DeleteDoctor, DeleteHospital, GetByDoctor, GetByRoom')
@@ -332,31 +335,25 @@ class DoctorSchedule(Resource):
 @timetables.route('/Hospital/<int:hospital_id>/Room/<string:room_name>')
 class RoomSchedule(Resource):
     @jwt_required()
+    @api.expect(room_schedule_params, validate=True)
     def get(self, hospital_id, room_name):
         """Получение расписания кабинета больницы"""
         identity = get_jwt_identity()
         token = request.headers.get('Authorization').split()[1]
         validate_roles(token, ['Admin', 'Manager', 'Doctor'])
 
-        from_time = request.args.get('from')
-        to_time = request.args.get('to')
+        from_time = request.json.get('from_time')
+        to_time = request.json.get('to_time')
 
         query = '''
             SELECT * FROM timetable WHERE 
                 hospital_id = %s AND
-                room = %s
+                room = %s AND
+                start_time >= %s AND
+                end_time <= %s
         '''
-        params = [hospital_id, room_name]
+        params = [hospital_id, room_name, from_time, to_time]
 
-        # Добавляем временные параметры только если они указаны
-        if from_time:
-            query += ' AND start_time >= %s'
-            params.append(from_time)
-        
-        if to_time:
-            query += ' AND end_time <= %s'
-            params.append(to_time)
-        
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute(query, params)
