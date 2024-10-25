@@ -79,10 +79,10 @@ def validate_roles(token, required_roles):
     except Exception as e:
         abort(500, 'Ошибка при валидации токена')
 
-history_ns = api.namespace('api/History', description='History Management')
+history_ns = api.namespace('Documents', description='Documents Management')
 
 history_model = api.model('History', {
-    'date': fields.String(required=True, description='The date of the visit in ISO8601 format'),
+    'date': fields.String(required=True, description='Дата ISO8601 формате'),
     'pacientId': fields.Integer(required=True, description='The patient ID'),
     'hospitalId': fields.Integer(required=True, description='The hospital ID'),
     'doctorId': fields.Integer(required=True, description='The doctor ID'),
@@ -169,6 +169,9 @@ class HistoryCreateResource(Resource):
         response = jsonify({'message': 'History created successfully', 'id': history_id})
         response.status_code = 201
         return response
+
+
+api.add_namespace(history_ns, path='/api/History')
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=8084)
