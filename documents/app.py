@@ -79,10 +79,10 @@ def validate_roles(token, required_roles):
     except Exception as e:
         abort(500, 'Ошибка при валидации токена')
 
-history_ns = Namespace('Documents', description='Documents Management')
+history_ns = Namespace('Документы', description='Create, Update, GetByAccount, GetByHistory')
 
 history_model = api.model('History', {
-    'date': fields.String(required=True, description='Дата ISO8601 формате'),
+    'date': fields.DateTime(required=True, description='Дата ISO8601 формате'),
     'pacientId': fields.Integer(required=True, description='The patient ID'),
     'hospitalId': fields.Integer(required=True, description='The hospital ID'),
     'doctorId': fields.Integer(required=True, description='The doctor ID'),
