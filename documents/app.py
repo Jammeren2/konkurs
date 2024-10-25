@@ -79,9 +79,12 @@ def validate_roles(token, required_roles):
     except Exception as e:
         abort(500, 'Ошибка при валидации токена')
 
-def get_doctor_by_id(doctor_id):
+def get_doctor_by_id(token, doctor_id):
     url = f"http://users-service:8081/api/Doctors/{doctor_id}"
-    response = requests.get(url)
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+    response = requests.get(url, headers=headers)
     if response.status_code == 200:
         return response.json()  # Доктор существует
     abort(404, {'message': 'Doctor not found'})  # Если доктора нет
@@ -168,7 +171,7 @@ class HistoryCreateResource(Resource):
 
         get_hospitals_by_id(token, hospital_id)
         get_rooms_by_id(token, hospital_id, room)
-        get_doctor_by_id(doctor_id)
+        get_doctor_by_id(token, doctor_id)
         conn = get_db_connection()
         with conn.cursor() as cursor:
             cursor.execute(
