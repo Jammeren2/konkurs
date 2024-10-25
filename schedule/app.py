@@ -7,13 +7,9 @@ from datetime import datetime, timedelta
 import requests
 from urllib.parse import urlparse
 import os
-import logging
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'super-secret'
 jwt = JWTManager(app)
-# Настройка логирования
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 authorizations = {
     'Bearer': {
@@ -357,7 +353,6 @@ class RoomSchedule(Resource):
                 end_time <= %s
         '''
         params = [hospital_id, room_name, from_time, to_time]
-        logger.info(f"Executing query: {query} with params: {params}")
         print(f"Executing query: {query} with params: {params}")
 
         conn = get_db_connection()
@@ -366,7 +361,6 @@ class RoomSchedule(Resource):
         schedules = cur.fetchall()
         cur.close()
         conn.close()
-        # В вашем коде вместо print
         return jsonify(schedules)
 
 
