@@ -79,6 +79,13 @@ def validate_roles(token, required_roles):
     except Exception as e:
         abort(500, 'Ошибка при валидации токена')
 
+def get_doctor_by_id(doctor_id):
+    url = f"http://users-service:8081/api/Doctors/{doctor_id}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()  # Доктор существует
+    abort(404, {'message': 'Doctor not found'})  # Если доктора нет
+
 history_ns = Namespace('Документы', description='Create, Update, GetByAccount, GetByHistory')
 
 history_model = api.model('History', {
@@ -144,6 +151,7 @@ class HistoryResource(Resource):
         conn.close()
         return jsonify({'message': 'History updated successfully'})
 
+
 @history_ns.route('/')
 class HistoryCreateResource(Resource):
     @jwt_required()
@@ -156,15 +164,16 @@ class HistoryCreateResource(Resource):
         data = request.json
         hospital_id = data['hospitalId']
         room = data['room']
+        doctor_id = data['doctorId']
 
         get_hospitals_by_id(token, hospital_id)
-
         get_rooms_by_id(token, hospital_id, room)
+        get_doctor_by_id(doctor_id)
         conn = get_db_connection()
         with conn.cursor() as cursor:
             cursor.execute(
                 "INSERT INTO history (date, pacientId, hospitalId, doctorId, room, data) VALUES (%s, %s, %s, %s, %s, %s) RETURNING id",
-                (data['date'], data['pacientId'], hospital_id, data['doctorId'], room, data['data'])
+                (data['date'], data['pacientId'], hospital_id, doctor_id, room, data['data'])
             )
             history_id = cursor.fetchone()['id']
             conn.commit()
