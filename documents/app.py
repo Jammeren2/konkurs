@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, abort
-from flask_restx import Api, Resource, fields
+from flask_restx import Api, Resource, fields, Namespace
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity, get_jwt
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -79,7 +79,7 @@ def validate_roles(token, required_roles):
     except Exception as e:
         abort(500, 'Ошибка при валидации токена')
 
-history_ns = api.namespace('Documents', description='Documents Management')
+history_ns = Namespace('Documents', description='Documents Management')
 
 history_model = api.model('History', {
     'date': fields.String(required=True, description='Дата ISO8601 формате'),
@@ -94,6 +94,7 @@ history_model = api.model('History', {
 class AccountHistoryResource(Resource):
     @jwt_required()
     def get(self, id):
+        """Получение истории посещений и назначений аккаунта"""
         token = request.headers.get('Authorization').split()[1]
         validate_roles(token, ['Doctor', 'Admin'])
 
@@ -111,6 +112,7 @@ class AccountHistoryResource(Resource):
 class HistoryResource(Resource):
     @jwt_required()
     def get(self, id):
+        """Получение подробной информации о посещении и назначениях"""
         token = request.headers.get('Authorization').split()[1]
         validate_roles(token, ['Doctor', 'Admin'])
 
@@ -127,6 +129,7 @@ class HistoryResource(Resource):
     @jwt_required()
     @api.expect(history_model)
     def put(self, id):
+        """Обновление истории посещения и назначения"""
         token = request.headers.get('Authorization').split()[1]
         validate_roles(token, ['Admin', 'Doctor'])
 
@@ -146,6 +149,7 @@ class HistoryCreateResource(Resource):
     @jwt_required()
     @api.expect(history_model)
     def post(self):
+        """Создание истории посещения и назначения"""
         token = request.headers.get('Authorization').split()[1]
         validate_roles(token, ['Admin', 'Doctor'])
 
