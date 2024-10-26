@@ -17,7 +17,7 @@
 ### Adminer:
 Adminer предоставляет простой веб-интерфейс для работы с каждой базой данных. Для доступа используйте ссылки ниже:
 
-- **Adminer (для всех БД)**: [http://localhost:8180](http://localhost:8180)
+- **Adminer**: [http://localhost:8180](http://localhost:8180)
 - **Adminer**: [http://localhost:8180](http://localhost:8180)
   - **Email**: `postgres`
   - **Пароль**: `123`
@@ -48,3 +48,5 @@ Adminer предоставляет простой веб-интерфейс дл
 Например, если ваш токен — `abc123`, введите:
 
 - **Bearer abc123**
+
+## How to install:
