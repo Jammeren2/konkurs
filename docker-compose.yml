@@ -71,7 +71,6 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     volumes:
       - pgadmin_data:/var/lib/pgadmin
-      - ./pgadmin-data/servers.json:/pgadmin4/servers.json
     ports:
       - "8181:80"
     depends_on:
@@ -79,7 +78,28 @@ services:
       - hospitals-db
       - schedules-db
       - documents-db
+      - pgadmin-init
     restart: always
+
+  # Новый контейнер для инициализации pgAdmin
+  pgadmin-init:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: pgadmin
+    volumes:
+      - ./add_servers.sql:/docker-entrypoint-initdb.d/add_servers.sql
+    depends_on:
+      - pgadmin
+    entrypoint: |
+      bash -c "
+      until pg_isready -h pgadmin -U postgres; do
+        sleep 1;
+      done;
+      psql -h pgadmin -U postgres -d pgadmin -f /docker-entrypoint-initdb.d/add_servers.sql;
+      "
+
 
   users-service:
     build:
