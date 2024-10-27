@@ -57,4 +57,4 @@ Adminer предоставляет простой веб-интерфейс дл
 ## How to install:
 
 - **git clone https://github.com/Jammeren2/konkurs**
-- **git clone docker compose up --build**
+- **docker compose up --build**
