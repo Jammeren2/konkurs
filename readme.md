@@ -49,4 +49,12 @@ Adminer предоставляет простой веб-интерфейс дл
 
 - **Bearer abc123**
 
+## requirements:
+- docker
+- git
+
+
 ## How to install:
+
+- **git clone https://github.com/Jammeren2/konkurs**
+- **git clone docker compose up --build**
