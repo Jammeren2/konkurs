@@ -292,7 +292,9 @@ class AccountList(Resource):
         users = [dict(row) for row in rows]
         for row in users:
             row['created_at'] = row['created_at'].isoformat()
-        return jsonify(users), 200
+        response = jsonify(users)
+        response.status_code = 200
+        return response
 
     @jwt_required()
     @accounts.doc(description="Создание аккаунта (только для админов)")
