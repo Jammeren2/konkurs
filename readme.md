@@ -31,10 +31,10 @@ Adminer предоставляет простой веб-интерфейс дл
 Подключенные базы данных:
 - **Login**: `postgres`
 - **Pass**: `123`
-- **Users DB** (хост: `users-db`)
-- **Hospitals DB** (хост: `hospitals-db`)
-- **Schedules DB** (хост: `schedules-db`)
-- **Documents DB** (хост: `documents-db`)
+  - **Users DB** (хост: `users-db`)
+  - **Hospitals DB** (хост: `hospitals-db`)
+  - **Schedules DB** (хост: `schedules-db`)
+  - **Documents DB** (хост: `documents-db`)
 
 ## Использование Swagger UI:
 При использовании Swagger UI для авторизации необходимо вводить токен в формате:
