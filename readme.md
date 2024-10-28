@@ -2,10 +2,10 @@
 
 ## Основное задание:
 
-1. **Account URL**: [http://localhost:8081/ui-swagger](http://localhost:8081/ui-swagger)
-2. **Hospital URL**: [http://localhost:8082/ui-swagger](http://localhost:8082/ui-swagger)
-3. **Timetable URL**: [http://localhost:8083/ui-swagger](http://localhost:8083/ui-swagger)
-4. **Document URL**: [http://localhost:8084/ui-swagger](http://localhost:8084/ui-swagger)
+1. **Account URL**: [http://localhost:8081/](http://localhost:8081/)
+2. **Hospital URL**: [http://localhost:8082/](http://localhost:8082/)
+3. **Timetable URL**: [http://localhost:8083/](http://localhost:8083/)
+4. **Document URL**: [http://localhost:8084/](http://localhost:8084/)
 
 
 ## Доступ к базам данных:
