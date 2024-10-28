@@ -7,18 +7,13 @@
 3. **Timetable URL**: [http://localhost:8083/ui-swagger](http://localhost:8083/ui-swagger)
 4. **Document URL**: [http://localhost:8084/ui-swagger](http://localhost:8084/ui-swagger)
 
-## Дополнительное задание (ОТсутствует):
-
-1. **ElasticSearch URL**: [http://elasticsearch-service/](http://elasticsearch-service/)
-2. **Kibana URL**: [http://kibana-service/](http://kibana-service/)
 
 ## Доступ к базам данных:
 
 ### Adminer:
 Adminer предоставляет простой веб-интерфейс для работы с каждой базой данных. Для доступа используйте ссылки ниже:
 
-- **Adminer**: [http://localhost:8180](http://localhost:8180)
-- **Adminer**: [http://localhost:8180](http://localhost:8180)
+ - **Adminer**: [http://localhost:8180](http://localhost:8180)
   - **Email**: `postgres`
   - **Пароль**: `123`
 
@@ -57,4 +52,5 @@ Adminer предоставляет простой веб-интерфейс дл
 ## How to install:
 
 - **git clone https://github.com/Jammeren2/konkurs**
-- **docker compose up --build**
+- **cd konkurs**
+- **docker compose up -d**
