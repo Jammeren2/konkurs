@@ -1,5 +1,7 @@
 # Проект: Управление базами данных и сервисами
 
+[Задание](https://github.com//Jammeren2/konkurs/blob/main/Задание-полуфинального-этапа-дисципплины-Backend-разработка-Web-API.pdf)
+
 ## Основное задание:
 
 1. **Account URL**: [http://localhost:8081/](http://localhost:8081/)
