@@ -46,7 +46,7 @@ Adminer предоставляет простой веб-интерфейс дл
 
 - **Bearer abc123**
 
-## requirements:
+## Requirements:
 - docker
 - git
 
